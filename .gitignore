@@ -21,3 +21,6 @@ playground.xcworkspace
 # CocoaPods / Carthage (unused, but ignore if added)
 Pods/
 Carthage/Build/
+admin/__pycache__/
+__pycache__/
+*.pyc
