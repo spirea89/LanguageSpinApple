@@ -1,0 +1,150 @@
+import Foundation
+
+enum AppLanguage: String, CaseIterable, Identifiable {
+    case en
+    case de
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .en: return "English"
+        case .de: return "Deutsch"
+        }
+    }
+}
+
+enum L10n {
+    private static let strings: [AppLanguage: [String: String]] = [
+        .en: [
+            "navGame": "Game",
+            "navConfigure": "Configure",
+            "languageLabel": "Language",
+            "gameEyebrow": "German practice wheel",
+            "gameTitle": "Spin, answer, score, repeat.",
+            "start": "Start",
+            "spin": "Spin",
+            "players": "Players",
+            "playerCount": "Number of players",
+            "playerNames": "Player names",
+            "playerName": "Player",
+            "rounds": "Spins per player",
+            "rounds5": "5 spins each",
+            "rounds10": "10 spins each",
+            "rounds20": "20 spins each",
+            "rounds30": "30 spins each",
+            "newGame": "New Game",
+            "resetScores": "Reset Scores",
+            "turn": "Turn",
+            "round": "Spins",
+            "question": "Question",
+            "scoreAnswer": "Score this answer",
+            "replayQuestion": "Play question again",
+            "showExample": "Show example",
+            "spinToChoose": "Spin to choose",
+            "intro": "Add players, choose the round count, then press Start.",
+            "noPlayers": "No players yet.",
+            "suggestedAnswer": "Suggested answer",
+            "spinning": "Spinning...",
+            "getReady": "Get ready to answer in German.",
+            "gameOver": "Game over",
+            "wonWith": "won with",
+            "points": "points",
+            "nextTurn": "Next turn",
+            "pressStart": "press Start.",
+            "scoresReset": "Scores are reset. Press Start when ready.",
+            "dataError": "Data error",
+            "winnerEyebrow": "Winner",
+            "winnerSubtitle": "finished with",
+            "closeCelebration": "Close",
+            "configEyebrow": "Content editor",
+            "configTitle": "Configure categories and German questions.",
+            "categories": "Categories",
+            "addCategory": "Add Category",
+            "categoryId": "ID",
+            "wheelLabel": "Wheel label",
+            "questionFile": "Question file",
+            "questions": "Questions",
+            "questionsAndAnswers": "Questions and suggested answers",
+            "saveChanges": "Save changes",
+            "savedLocally": "Saved on this device.",
+            "reloadDefaults": "Reset to defaults",
+            "staticNote": "Edits are saved on this device and used by the game. Reset restores the bundled starter content.",
+            "fileFormat": "Text file format",
+            "newQuestionFile": "New question file",
+            "prompt": "Question",
+            "answer": "Suggested answer",
+            "addQuestion": "Add question",
+            "delete": "Delete",
+            "unsaved": "You have unsaved changes.",
+            "noCategories": "No categories yet."
+        ],
+        .de: [
+            "navGame": "Spiel",
+            "navConfigure": "Konfigurieren",
+            "languageLabel": "Sprache",
+            "gameEyebrow": "Deutsch-Übungsrad",
+            "gameTitle": "Drehen, antworten, punkten.",
+            "start": "Start",
+            "spin": "Drehen",
+            "players": "Spieler",
+            "playerCount": "Anzahl der Spieler",
+            "playerNames": "Spielernamen",
+            "playerName": "Spieler",
+            "rounds": "Drehungen pro Spieler",
+            "rounds5": "5 Drehungen",
+            "rounds10": "10 Drehungen",
+            "rounds20": "20 Drehungen",
+            "rounds30": "30 Drehungen",
+            "newGame": "Neues Spiel",
+            "resetScores": "Punkte zurücksetzen",
+            "turn": "Am Zug",
+            "round": "Drehungen",
+            "question": "Frage",
+            "scoreAnswer": "Antwort bewerten",
+            "replayQuestion": "Frage erneut abspielen",
+            "showExample": "Beispiel zeigen",
+            "spinToChoose": "Drehen zum Auswählen",
+            "intro": "Spieler eintragen, Rundenzahl wählen und Start drücken.",
+            "noPlayers": "Noch keine Spieler.",
+            "suggestedAnswer": "Mögliche Antwort",
+            "spinning": "Das Rad dreht...",
+            "getReady": "Mach dich bereit, auf Deutsch zu antworten.",
+            "gameOver": "Spiel beendet",
+            "wonWith": "gewinnt mit",
+            "points": "Punkten",
+            "nextTurn": "Nächster Zug",
+            "pressStart": "drücke Start.",
+            "scoresReset": "Punkte sind zurückgesetzt. Drücke Start, wenn du bereit bist.",
+            "dataError": "Datenfehler",
+            "winnerEyebrow": "Gewinner",
+            "winnerSubtitle": "endet mit",
+            "closeCelebration": "Schließen",
+            "configEyebrow": "Inhalte bearbeiten",
+            "configTitle": "Kategorien und Deutschfragen konfigurieren.",
+            "categories": "Kategorien",
+            "addCategory": "Kategorie hinzufügen",
+            "categoryId": "ID",
+            "wheelLabel": "Rad-Beschriftung",
+            "questionFile": "Fragedatei",
+            "questions": "Fragen",
+            "questionsAndAnswers": "Fragen und mögliche Antworten",
+            "saveChanges": "Änderungen speichern",
+            "savedLocally": "Auf diesem Gerät gespeichert.",
+            "reloadDefaults": "Auf Standard zurücksetzen",
+            "staticNote": "Änderungen werden auf diesem Gerät gespeichert und vom Spiel verwendet. Zurücksetzen stellt die mitgelieferten Inhalte wieder her.",
+            "fileFormat": "Textdatei-Format",
+            "newQuestionFile": "Neue Fragedatei",
+            "prompt": "Frage",
+            "answer": "Mögliche Antwort",
+            "addQuestion": "Frage hinzufügen",
+            "delete": "Löschen",
+            "unsaved": "Es gibt ungespeicherte Änderungen.",
+            "noCategories": "Noch keine Kategorien."
+        ]
+    ]
+
+    static func t(_ key: String, language: AppLanguage) -> String {
+        strings[language]?[key] ?? strings[.en]?[key] ?? key
+    }
+}

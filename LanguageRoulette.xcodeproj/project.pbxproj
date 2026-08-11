@@ -1,0 +1,415 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		27146BBBBDF34A3ABBBA26D8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3D6843585C941F48670636C /* ContentView.swift */; };
+		7AAA54FBCE9241069B92C394 /* LanguageRouletteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F2045D12824B729DC1B5FE /* LanguageRouletteApp.swift */; };
+		5A78FF5327FF4BDB8F9312D1 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C1E4979149424AA6952965 /* AppTheme.swift */; };
+		1EF9D94535ED489C8592F1B5 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C96408B42F7443491625A4B /* ButtonStyles.swift */; };
+		9ACA958E33174D4C861F0976 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A22FDDB4C2647BABF760808 /* Category.swift */; };
+		91E95E4240D8421FA702D916 /* ConfigureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07476C9D034F44AC907D4BD5 /* ConfigureView.swift */; };
+		074CA18E4A2549459F1002F3 /* ConfigureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8BF3BEEAFBC4B3EAB5BC795 /* ConfigureViewModel.swift */; };
+		5170C9F8960743AFA4E8584E /* CelebrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50C2239AB64E21B7F1F47C /* CelebrationView.swift */; };
+		E2FF41B629D346C5BA05192F /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8A14D675DDC4E52AB4D9154 /* GameView.swift */; };
+		B38DA47D6CF54BEDAC69A6BE /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FD346169BB47B3A55B65A2 /* GameViewModel.swift */; };
+		A057F88B0F1145D6A90E0F31 /* ScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427646789789437D99C05558 /* ScoreboardView.swift */; };
+		6F9600D81687468E9F483532 /* WheelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09AEE4AD73664D3AB7D09C9E /* WheelView.swift */; };
+		6F59F9B49AFB4C698AE598D0 /* ContentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC0BAA8677A457B98103552 /* ContentStore.swift */; };
+		73F72679AC2342259AC9CD7E /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC205BDF57E459FAF9DEF62 /* L10n.swift */; };
+		6847CC5EB49742F499F1A4D2 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1253F8B64B34CACA338955E /* SpeechService.swift */; };
+		F87F459E371D4E6E924520B9 /* categories.txt in Resources */ = {isa = PBXBuildFile; fileRef = 24F07CFA165540DCBDE4E8D1 /* categories.txt */; };
+		C9AE2F08185041DD8749EE62 /* evening.txt in Resources */ = {isa = PBXBuildFile; fileRef = A7AFA70A5ABE4010AE64AEC3 /* evening.txt */; };
+		BFF7092F701D46EB83BD5388 /* family.txt in Resources */ = {isa = PBXBuildFile; fileRef = 77167509C5C14064A5AE761B /* family.txt */; };
+		FE7E0ED74CFB418482995561 /* fun.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9131515C0589428A82604103 /* fun.txt */; };
+		CD7BBF05A9CD4D80A2A22E8C /* hobbies.txt in Resources */ = {isa = PBXBuildFile; fileRef = 935C45D4FBE74FB981E3BDCB /* hobbies.txt */; };
+		D6BAB688BCE8450AA7A2C8BE /* home.txt in Resources */ = {isa = PBXBuildFile; fileRef = 994970C4E37D4934960C8F1E /* home.txt */; };
+		C2EA5EF1AFBA4A79ABC43F54 /* lunch.txt in Resources */ = {isa = PBXBuildFile; fileRef = D8E9FC386EA04C2396D84497 /* lunch.txt */; };
+		25046D9A53B840AC864EE748 /* morning.txt in Resources */ = {isa = PBXBuildFile; fileRef = D9651EC9FF8C401B8F332D19 /* morning.txt */; };
+		33DAE5817FF74B4CBAC220F8 /* school-work.txt in Resources */ = {isa = PBXBuildFile; fileRef = 38F44E8930264A87B4B0BB56 /* school-work.txt */; };
+		CF6C1E0451954F3381B99E1C /* shopping.txt in Resources */ = {isa = PBXBuildFile; fileRef = B296DB5A302B4499A1CC3887 /* shopping.txt */; };
+		858050D0331C48409FC4C709 /* travel.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9096B90FBCAD46FC9F9D2973 /* travel.txt */; };
+		5C812FAA5D0F46528DF0F717 /* why.txt in Resources */ = {isa = PBXBuildFile; fileRef = FD1989BF007C478EB82391FC /* why.txt */; };
+		79105FDD931047008986595C /* would-you.txt in Resources */ = {isa = PBXBuildFile; fileRef = 303BF31413B8439CA4A5ABD3 /* would-you.txt */; };
+		35B7EF3C55AC481B8518E919 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1CB15E3341C745F7904F76FD /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A3304624EF294CE18CBA75B2 /* Language Roulette.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Language Roulette.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3D6843585C941F48670636C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		87F2045D12824B729DC1B5FE /* LanguageRouletteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageRouletteApp.swift; sourceTree = "<group>"; };
+		32C1E4979149424AA6952965 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		5C96408B42F7443491625A4B /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
+		6A22FDDB4C2647BABF760808 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		07476C9D034F44AC907D4BD5 /* ConfigureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureView.swift; sourceTree = "<group>"; };
+		D8BF3BEEAFBC4B3EAB5BC795 /* ConfigureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureViewModel.swift; sourceTree = "<group>"; };
+		9C50C2239AB64E21B7F1F47C /* CelebrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelebrationView.swift; sourceTree = "<group>"; };
+		B8A14D675DDC4E52AB4D9154 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		43FD346169BB47B3A55B65A2 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		427646789789437D99C05558 /* ScoreboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreboardView.swift; sourceTree = "<group>"; };
+		09AEE4AD73664D3AB7D09C9E /* WheelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WheelView.swift; sourceTree = "<group>"; };
+		5BC0BAA8677A457B98103552 /* ContentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentStore.swift; sourceTree = "<group>"; };
+		AFC205BDF57E459FAF9DEF62 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
+		A1253F8B64B34CACA338955E /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
+		24F07CFA165540DCBDE4E8D1 /* categories.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = categories.txt; sourceTree = "<group>"; };
+		A7AFA70A5ABE4010AE64AEC3 /* evening.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = evening.txt; sourceTree = "<group>"; };
+		77167509C5C14064A5AE761B /* family.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = family.txt; sourceTree = "<group>"; };
+		9131515C0589428A82604103 /* fun.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = fun.txt; sourceTree = "<group>"; };
+		935C45D4FBE74FB981E3BDCB /* hobbies.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = hobbies.txt; sourceTree = "<group>"; };
+		994970C4E37D4934960C8F1E /* home.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = home.txt; sourceTree = "<group>"; };
+		D8E9FC386EA04C2396D84497 /* lunch.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = lunch.txt; sourceTree = "<group>"; };
+		D9651EC9FF8C401B8F332D19 /* morning.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = morning.txt; sourceTree = "<group>"; };
+		38F44E8930264A87B4B0BB56 /* school-work.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = school-work.txt; sourceTree = "<group>"; };
+		B296DB5A302B4499A1CC3887 /* shopping.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = shopping.txt; sourceTree = "<group>"; };
+		9096B90FBCAD46FC9F9D2973 /* travel.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = travel.txt; sourceTree = "<group>"; };
+		FD1989BF007C478EB82391FC /* why.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = why.txt; sourceTree = "<group>"; };
+		303BF31413B8439CA4A5ABD3 /* would-you.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = would-you.txt; sourceTree = "<group>"; };
+		1CB15E3341C745F7904F76FD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5E2934C37F3647DBA1B12A11 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		927AB34EDF5947D79A475FD2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5250EC71EFCD4572AECDE28D /* data */ = {
+			isa = PBXGroup;
+			children = (
+				24F07CFA165540DCBDE4E8D1 /* categories.txt */,
+				A7AFA70A5ABE4010AE64AEC3 /* evening.txt */,
+				77167509C5C14064A5AE761B /* family.txt */,
+				9131515C0589428A82604103 /* fun.txt */,
+				935C45D4FBE74FB981E3BDCB /* hobbies.txt */,
+				994970C4E37D4934960C8F1E /* home.txt */,
+				D8E9FC386EA04C2396D84497 /* lunch.txt */,
+				D9651EC9FF8C401B8F332D19 /* morning.txt */,
+				38F44E8930264A87B4B0BB56 /* school-work.txt */,
+				B296DB5A302B4499A1CC3887 /* shopping.txt */,
+				9096B90FBCAD46FC9F9D2973 /* travel.txt */,
+				FD1989BF007C478EB82391FC /* why.txt */,
+				303BF31413B8439CA4A5ABD3 /* would-you.txt */,
+			);
+			path = data;
+			sourceTree = "<group>";
+		};
+		3274CE1065314D078A2779B8 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5250EC71EFCD4572AECDE28D /* data */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		542785830DE348D08DB9283B /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				32C1E4979149424AA6952965 /* AppTheme.swift */,
+				5C96408B42F7443491625A4B /* ButtonStyles.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		B39BD58FAC2D44678BCC977C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6A22FDDB4C2647BABF760808 /* Category.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		72F78FF270B7462F871FC899 /* Configure */ = {
+			isa = PBXGroup;
+			children = (
+				07476C9D034F44AC907D4BD5 /* ConfigureView.swift */,
+				D8BF3BEEAFBC4B3EAB5BC795 /* ConfigureViewModel.swift */,
+			);
+			path = Configure;
+			sourceTree = "<group>";
+		};
+		9AA6C1618381484EB8EF4D62 /* Game */ = {
+			isa = PBXGroup;
+			children = (
+				9C50C2239AB64E21B7F1F47C /* CelebrationView.swift */,
+				B8A14D675DDC4E52AB4D9154 /* GameView.swift */,
+				43FD346169BB47B3A55B65A2 /* GameViewModel.swift */,
+				427646789789437D99C05558 /* ScoreboardView.swift */,
+				09AEE4AD73664D3AB7D09C9E /* WheelView.swift */,
+			);
+			path = Game;
+			sourceTree = "<group>";
+		};
+		6F1C0B677FF44EA78ED37E4B /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				5BC0BAA8677A457B98103552 /* ContentStore.swift */,
+				AFC205BDF57E459FAF9DEF62 /* L10n.swift */,
+				A1253F8B64B34CACA338955E /* SpeechService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		59EF58ED72344DB6894DC02E /* LanguageRoulette */ = {
+			isa = PBXGroup;
+			children = (
+				B3D6843585C941F48670636C /* ContentView.swift */,
+				87F2045D12824B729DC1B5FE /* LanguageRouletteApp.swift */,
+				542785830DE348D08DB9283B /* Theme */,
+				B39BD58FAC2D44678BCC977C /* Models */,
+				72F78FF270B7462F871FC899 /* Configure */,
+				9AA6C1618381484EB8EF4D62 /* Game */,
+				6F1C0B677FF44EA78ED37E4B /* Services */,
+				3274CE1065314D078A2779B8 /* Resources */,
+				1CB15E3341C745F7904F76FD /* Assets.xcassets */,
+				5E2934C37F3647DBA1B12A11 /* Info.plist */,
+			);
+			path = LanguageRoulette;
+			sourceTree = "<group>";
+		};
+		48D5771802D947B798A5AE2E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A3304624EF294CE18CBA75B2 /* Language Roulette.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6A1DD053ED004DE889D705CE = {
+			isa = PBXGroup;
+			children = (
+				59EF58ED72344DB6894DC02E /* LanguageRoulette */,
+				48D5771802D947B798A5AE2E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0348E3F4A361455EBB6ACA09 /* LanguageRoulette */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58F0D5F11843477DABFE53B1 /* Build configuration list for PBXNativeTarget "LanguageRoulette" */;
+			buildPhases = (
+				7B95997FE4934704B1D2CA9F /* Sources */,
+				927AB34EDF5947D79A475FD2 /* Frameworks */,
+				F21993EE23174D2FAD172F91 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LanguageRoulette;
+			productName = LanguageRoulette;
+			productReference = A3304624EF294CE18CBA75B2 /* Language Roulette.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		ED4415CD334D47A4BB94B1E3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					0348E3F4A361455EBB6ACA09 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A642535DC890488682DC205A /* Build configuration list for PBXProject "LanguageRoulette" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				de,
+			);
+			mainGroup = 6A1DD053ED004DE889D705CE;
+			productRefGroup = 48D5771802D947B798A5AE2E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0348E3F4A361455EBB6ACA09 /* LanguageRoulette */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F21993EE23174D2FAD172F91 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				35B7EF3C55AC481B8518E919 /* Assets.xcassets in Resources */,
+				F87F459E371D4E6E924520B9 /* categories.txt in Resources */,
+				C9AE2F08185041DD8749EE62 /* evening.txt in Resources */,
+				BFF7092F701D46EB83BD5388 /* family.txt in Resources */,
+				FE7E0ED74CFB418482995561 /* fun.txt in Resources */,
+				CD7BBF05A9CD4D80A2A22E8C /* hobbies.txt in Resources */,
+				D6BAB688BCE8450AA7A2C8BE /* home.txt in Resources */,
+				C2EA5EF1AFBA4A79ABC43F54 /* lunch.txt in Resources */,
+				25046D9A53B840AC864EE748 /* morning.txt in Resources */,
+				33DAE5817FF74B4CBAC220F8 /* school-work.txt in Resources */,
+				CF6C1E0451954F3381B99E1C /* shopping.txt in Resources */,
+				858050D0331C48409FC4C709 /* travel.txt in Resources */,
+				5C812FAA5D0F46528DF0F717 /* why.txt in Resources */,
+				79105FDD931047008986595C /* would-you.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7B95997FE4934704B1D2CA9F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27146BBBBDF34A3ABBBA26D8 /* ContentView.swift in Sources */,
+				7AAA54FBCE9241069B92C394 /* LanguageRouletteApp.swift in Sources */,
+				5A78FF5327FF4BDB8F9312D1 /* AppTheme.swift in Sources */,
+				1EF9D94535ED489C8592F1B5 /* ButtonStyles.swift in Sources */,
+				9ACA958E33174D4C861F0976 /* Category.swift in Sources */,
+				91E95E4240D8421FA702D916 /* ConfigureView.swift in Sources */,
+				074CA18E4A2549459F1002F3 /* ConfigureViewModel.swift in Sources */,
+				5170C9F8960743AFA4E8584E /* CelebrationView.swift in Sources */,
+				E2FF41B629D346C5BA05192F /* GameView.swift in Sources */,
+				B38DA47D6CF54BEDAC69A6BE /* GameViewModel.swift in Sources */,
+				A057F88B0F1145D6A90E0F31 /* ScoreboardView.swift in Sources */,
+				6F9600D81687468E9F483532 /* WheelView.swift in Sources */,
+				6F59F9B49AFB4C698AE598D0 /* ContentStore.swift in Sources */,
+				73F72679AC2342259AC9CD7E /* L10n.swift in Sources */,
+				6847CC5EB49742F499F1A4D2 /* SpeechService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		515B848528F6427F812E3B69 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		9BFB23F95A294FE9BC65DDD1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		08BAFF47D1BE496EBB19142C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LanguageRoulette/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Language Roulette";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.spirea89.LanguageRoulette;
+				PRODUCT_NAME = "Language Roulette";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B1D4DCC0240C463AA107ABA5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = LanguageRoulette/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Language Roulette";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.spirea89.LanguageRoulette;
+				PRODUCT_NAME = "Language Roulette";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A642535DC890488682DC205A /* Build configuration list for PBXProject "LanguageRoulette" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				515B848528F6427F812E3B69 /* Debug */,
+				9BFB23F95A294FE9BC65DDD1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58F0D5F11843477DABFE53B1 /* Build configuration list for PBXNativeTarget "LanguageRoulette" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08BAFF47D1BE496EBB19142C /* Debug */,
+				B1D4DCC0240C463AA107ABA5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = ED4415CD334D47A4BB94B1E3 /* Project object */;
+}
