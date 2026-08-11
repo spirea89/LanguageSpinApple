@@ -113,3 +113,13 @@ LanguageRoulette/                 # SwiftUI iOS app
 content/content.json              # source-of-truth content pack
 admin/                            # web admin UI + local save server
 ```
+
+## Also in this branch: Der Die Das
+
+Native SwiftUI article practice app (ported from GermanaTeodora).
+
+- Open `DerDieDas.xcodeproj`
+- See `DerDieDas/README.md`
+
+This code is intended for https://github.com/spirea89/DerDieDas-Apple — included here because the cloud agent currently has write access to this repository.
+
