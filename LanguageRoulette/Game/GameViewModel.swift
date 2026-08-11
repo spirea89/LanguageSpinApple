@@ -11,8 +11,8 @@ final class GameViewModel: ObservableObject {
     @Published var playerCount: Int = 2
     @Published var playerNames: [String] = ["Player 1", "Player 2"]
     @Published var roundLimit: Int = 10
-    @Published var language: AppLanguage {
-        didSet { UserDefaults.standard.set(language.rawValue, forKey: "roata-language") }
+    @Published var languageCode: String {
+        didSet { UserDefaults.standard.set(languageCode, forKey: "roata-language") }
     }
 
     @Published private(set) var players: [Player] = []
@@ -43,6 +43,10 @@ final class GameViewModel: ObservableObject {
         contentStore?.categories ?? []
     }
 
+    var availableLanguages: [ContentLanguage] {
+        contentStore?.languages ?? []
+    }
+
     var setupLocked: Bool {
         gameStarted && !gameOver
     }
@@ -65,8 +69,13 @@ final class GameViewModel: ObservableObject {
     }
 
     init(contentStore: ContentStore) {
-        let saved = UserDefaults.standard.string(forKey: "roata-language") ?? "en"
-        self.language = AppLanguage(rawValue: saved) ?? .en
+        let saved = UserDefaults.standard.string(forKey: "roata-language")
+        let fallback = contentStore.defaultLanguage
+        if let saved, contentStore.languages.contains(where: { $0.code == saved }) {
+            self.languageCode = saved
+        } else {
+            self.languageCode = fallback
+        }
         self.contentStore = contentStore
         syncPlayerNameFields()
         buildPlayers()
@@ -75,17 +84,25 @@ final class GameViewModel: ObservableObject {
 
     func attach(contentStore: ContentStore) {
         self.contentStore = contentStore
+        if !contentStore.languages.contains(where: { $0.code == languageCode }) {
+            languageCode = contentStore.defaultLanguage
+        }
         if let error = contentStore.loadError {
             categoryLabel = t("dataError")
             questionText = error
             answerText = ""
-        } else if currentQuestion == nil {
-            applyMessageState()
+        } else {
+            refreshLanguageLabels()
         }
     }
 
     func t(_ key: String) -> String {
-        L10n.t(key, language: language)
+        contentStore?.localized(key, language: languageCode)
+            ?? L10n.t(key, language: languageCode, ui: [:], fallback: "en")
+    }
+
+    func categoryDisplayName(_ category: Category) -> String {
+        category.label(for: languageCode, fallback: contentStore?.defaultLanguage ?? "en")
     }
 
     func syncPlayerNameFields() {
@@ -180,13 +197,13 @@ final class GameViewModel: ObservableObject {
             currentQuestion = ActiveQuestion(category: category, question: question)
             exampleVisible = false
             spinning = false
-            setQuestion(category: category.label, prompt: question.prompt, answer: question.answer)
+            setQuestion(category: categoryDisplayName(category), prompt: question.prompt, answer: question.answer)
             speech.speakGerman(question.prompt)
         }
     }
 
     func score(_ points: Int) {
-        guard let active = currentQuestion, !gameOver else { return }
+        guard currentQuestion != nil, !gameOver else { return }
 
         players[currentPlayerIndex].score += points
         players[currentPlayerIndex].spins += 1
@@ -221,7 +238,7 @@ final class GameViewModel: ObservableObject {
     func showExample() {
         guard let active = currentQuestion, !active.question.answer.isEmpty else { return }
         exampleVisible = true
-        setQuestion(category: active.category.label, prompt: active.question.prompt, answer: active.question.answer)
+        setQuestion(category: categoryDisplayName(active.category), prompt: active.question.prompt, answer: active.question.answer)
     }
 
     func hideCelebration() {
@@ -230,10 +247,10 @@ final class GameViewModel: ObservableObject {
 
     func refreshLanguageLabels() {
         syncPlayerNameFields()
-        if currentQuestion == nil {
+        if let active = currentQuestion {
+            setQuestion(category: categoryDisplayName(active.category), prompt: active.question.prompt, answer: active.question.answer)
+        } else {
             applyMessageState()
-        } else if let active = currentQuestion {
-            setQuestion(category: active.category.label, prompt: active.question.prompt, answer: active.question.answer)
         }
     }
 
@@ -268,7 +285,7 @@ final class GameViewModel: ObservableObject {
 
     private func applyMessageState() {
         if let active = currentQuestion {
-            setQuestion(category: active.category.label, prompt: active.question.prompt, answer: active.question.answer)
+            setQuestion(category: categoryDisplayName(active.category), prompt: active.question.prompt, answer: active.question.answer)
         } else if messageKey == "intro" {
             setMessage(categoryKey: "spinToChoose", promptKey: "intro", detail: "")
         } else if messageKey == "getReady" {

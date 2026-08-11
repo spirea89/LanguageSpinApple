@@ -2,6 +2,8 @@ import SwiftUI
 
 struct WheelView: View {
     let categories: [Category]
+    let languageCode: String
+    let fallbackLanguage: String
     let rotation: Double
     let isSpinning: Bool
 
@@ -23,7 +25,12 @@ struct WheelView: View {
                         )
                 } else {
                     WheelSegments(categories: categories)
-                    WheelLabels(categories: categories, rotation: rotation)
+                    WheelLabels(
+                        categories: categories,
+                        languageCode: languageCode,
+                        fallbackLanguage: fallbackLanguage,
+                        rotation: rotation
+                    )
                 }
 
                 Circle()
@@ -73,6 +80,8 @@ private struct WheelSegments: View {
 
 private struct WheelLabels: View {
     let categories: [Category]
+    let languageCode: String
+    let fallbackLanguage: String
     let rotation: Double
 
     var body: some View {
@@ -89,7 +98,7 @@ private struct WheelLabels: View {
                 let x = size / 2 + cos(labelAngle) * radius
                 let y = size / 2 + sin(labelAngle) * radius
 
-                Text(category.label)
+                Text(category.label(for: languageCode, fallback: fallbackLanguage))
                     .font(.system(size: max(9, size * 0.035), weight: .bold))
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.25), radius: 1, y: 1)

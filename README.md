@@ -2,53 +2,96 @@
 
 Native SwiftUI iOS app for the German practice wheel game **Language Roulette**.
 
-This repository is the App Store–oriented iOS project. It is separate from the web game at [spirea89/RoataNoroculuiDE](https://github.com/spirea89/RoataNoroculuiDE). Starter question content was copied into `LanguageRoulette/Resources/data/` and is edited only here.
+This repository also includes a **web admin** for managing languages, UI translations, category labels, and questions.
 
 ## Requirements
 
-- macOS with Xcode 15 or newer
-- iOS 17.0+ simulator or device
-- Apple Developer account (for device installs and App Store submission)
+- macOS with Xcode 15 or newer (iOS 17+)
+- Node.js (optional, for the local web admin save server)
+- Apple Developer account for device installs / App Store submission
 
-## Open and run
+## Open and run the iOS app
 
 1. Open `LanguageRoulette.xcodeproj` in Xcode.
-2. Select the **LanguageRoulette** target.
-3. Set your **Team** under Signing & Capabilities.
-4. Choose an iPhone or iPad simulator and press Run.
+2. Select the **LanguageRoulette** target and set your Team under Signing & Capabilities.
+3. Choose an iPhone/iPad simulator and press Run.
 
 Display name: **Language Roulette**  
 Bundle ID: `com.spirea89.LanguageRoulette`
 
-## Features
+## Multilingual content pack
 
-- Spinning category wheel with the same scoring flow as the web game
-- 1–10 players, custom names, spins per player (5 / 10 / 20 / 30)
-- German text-to-speech for questions (`AVSpeechSynthesizer`)
-- Show example answer, replay question, winner celebration
-- English / Deutsch UI language
-- Configure screen that saves categories and questions on-device (with reset to bundled defaults)
+All maintainable translations live in one JSON pack:
+
+```text
+content/content.json
+```
+
+Copied into the app bundle as:
+
+```text
+LanguageRoulette/Resources/content/content.json
+```
+
+### Format
+
+```json
+{
+  "version": 1,
+  "defaultLanguage": "en",
+  "languages": [
+    { "code": "en", "name": "English" },
+    { "code": "de", "name": "Deutsch" }
+  ],
+  "ui": {
+    "navGame": { "en": "Game", "de": "Spiel" }
+  },
+  "categories": [
+    {
+      "id": "morning",
+      "labels": { "en": "Morning", "de": "Morgen" },
+      "questions": [
+        { "prompt": "Wie hast du geschlafen?", "answer": "Ich habe gut geschlafen." }
+      ]
+    }
+  ]
+}
+```
+
+- **languages**: appears in the app language switcher
+- **ui**: app chrome strings
+- **categories.labels**: wheel labels (switch with the UI language)
+- **questions**: practice prompts (kept in German for this learning game)
+
+## Web admin (add languages yourself)
+
+```bash
+node admin/dev-server.cjs
+```
+
+Open [http://localhost:5180](http://localhost:5180).
+
+In the admin you can:
+
+1. Add a language (example: `fr` / French)
+2. Fill UI strings for the new language
+3. Fill category labels for the new language
+4. Edit questions
+5. Click **Save to project** (writes `content/content.json`, `admin/content/content.json`, and `LanguageRoulette/Resources/content/content.json`)
+
+Then rebuild the iOS app in Xcode.
+
+If the server is not running, use **Download content.json** and replace the iOS resource file manually.
+
+## In-app Configure
+
+The iOS Configure tab still lets you edit categories/questions and labels per language on-device. For adding brand-new languages and full translation packs, use the web admin.
 
 ## Project layout
 
-```
+```text
 LanguageRoulette.xcodeproj
-LanguageRoulette/
-  LanguageRouletteApp.swift
-  ContentView.swift
-  Game/
-  Configure/
-  Models/
-  Services/
-  Theme/
-  Resources/data/
-  Assets.xcassets
-  Info.plist
+LanguageRoulette/                 # SwiftUI iOS app
+content/content.json              # source-of-truth content pack
+admin/                            # web admin UI + local save server
 ```
-
-## App Store notes
-
-- Gameplay works offline from bundled content; user Configure edits stay on device.
-- Add a 1024×1024 marketing icon in `Assets.xcassets/AppIcon.appiconset` before submission.
-- Set your Development Team, archive with Product → Archive, then upload via Organizer / App Store Connect.
-- Privacy: no account system and no network requirement for core gameplay; speech uses on-device synthesis.

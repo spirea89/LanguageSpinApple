@@ -2,146 +2,194 @@ import Foundation
 
 @MainActor
 final class ContentStore: ObservableObject {
-    @Published private(set) var categories: [Category] = []
+    @Published private(set) var pack: ContentPack = ContentPack(
+        version: 1,
+        languages: [
+            ContentLanguage(code: "en", name: "English"),
+            ContentLanguage(code: "de", name: "Deutsch")
+        ],
+        defaultLanguage: "en",
+        ui: [:],
+        categories: []
+    )
     @Published private(set) var loadError: String?
 
+    var categories: [Category] { pack.categories }
+    var languages: [ContentLanguage] { pack.languages }
+    var ui: [String: [String: String]] { pack.ui }
+    var defaultLanguage: String { pack.defaultLanguage }
+
+    private let overridesFileName = "content.json"
     private let overridesDirectory: URL
-    private let categoriesFileName = "categories.txt"
 
     init(fileManager: FileManager = .default) {
         let base = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? fileManager.temporaryDirectory
-        overridesDirectory = base.appendingPathComponent("LanguageRoulette/data", isDirectory: true)
+        overridesDirectory = base.appendingPathComponent("LanguageRoulette/content", isDirectory: true)
         try? fileManager.createDirectory(at: overridesDirectory, withIntermediateDirectories: true)
         reload()
     }
 
     func reload() {
         do {
-            categories = try loadCategories()
+            pack = try loadPack()
             loadError = nil
         } catch {
-            categories = []
+            pack = ContentPack(version: 1, languages: [], defaultLanguage: "en", ui: [:], categories: [])
             loadError = error.localizedDescription
         }
     }
 
     func resetToDefaults() throws {
-        let fm = FileManager.default
-        if fm.fileExists(atPath: overridesDirectory.path) {
-            try fm.removeItem(at: overridesDirectory)
+        let overrideURL = overridesDirectory.appendingPathComponent(overridesFileName)
+        if FileManager.default.fileExists(atPath: overrideURL.path) {
+            try FileManager.default.removeItem(at: overrideURL)
         }
-        try fm.createDirectory(at: overridesDirectory, withIntermediateDirectories: true)
         reload()
     }
 
-    func save(categories edited: [Category]) throws {
-        let fm = FileManager.default
-        try fm.createDirectory(at: overridesDirectory, withIntermediateDirectories: true)
-
-        let categoryLines = edited.map { "\($0.id)|\($0.label)|\($0.file)" }
-        let categoriesText = (["# id|Wheel label|Question file"] + categoryLines).joined(separator: "\n") + "\n"
-        try categoriesText.write(to: overridesDirectory.appendingPathComponent(categoriesFileName), atomically: true, encoding: .utf8)
-
-        var writtenFiles = Set<String>()
-        for category in edited {
-            guard !writtenFiles.contains(category.file) else { continue }
-            writtenFiles.insert(category.file)
-            let questionLines = category.questions.map { question in
-                if question.answer.isEmpty {
-                    return question.prompt
-                }
-                return "\(question.prompt)|\(question.answer)"
-            }
-            let text = (["# Question|Suggested answer"] + questionLines).joined(separator: "\n") + "\n"
-            try text.write(to: overridesDirectory.appendingPathComponent(category.file), atomically: true, encoding: .utf8)
-        }
-
+    func save(pack edited: ContentPack) throws {
+        try FileManager.default.createDirectory(at: overridesDirectory, withIntermediateDirectories: true)
+        let data = try Self.encode(pack: edited)
+        try data.write(to: overridesDirectory.appendingPathComponent(overridesFileName), options: .atomic)
         reload()
+    }
+
+    func localized(_ key: String, language: String) -> String {
+        L10n.t(key, language: language, ui: pack.ui, fallback: pack.defaultLanguage)
     }
 
     // MARK: - Loading
 
-    private func loadCategories() throws -> [Category] {
-        let text = try readText(named: categoriesFileName)
-        let parsed = Self.parseLines(text).compactMap(Self.parseCategoryLine)
-        var result: [Category] = []
-
-        for entry in parsed {
-            let questionText = try readText(named: entry.file)
-            let questions = Self.parseLines(questionText)
-                .compactMap(Self.parseQuestionLine)
-                .enumerated()
-                .map { index, question in
-                    Question(
-                        id: "\(entry.id):\(index)",
-                        prompt: question.prompt,
-                        answer: question.answer
-                    )
-                }
-            guard !questions.isEmpty else { continue }
-            result.append(Category(id: entry.id, label: entry.label, file: entry.file, questions: questions))
-        }
-        return result
+    private func loadPack() throws -> ContentPack {
+        let data = try readContentData()
+        return try Self.decode(data: data)
     }
 
-    private func readText(named fileName: String) throws -> String {
-        let overrideURL = overridesDirectory.appendingPathComponent(fileName)
+    private func readContentData() throws -> Data {
+        let overrideURL = overridesDirectory.appendingPathComponent(overridesFileName)
         if FileManager.default.fileExists(atPath: overrideURL.path) {
-            return try String(contentsOf: overrideURL, encoding: .utf8)
+            return try Data(contentsOf: overrideURL)
         }
 
-        let baseName = (fileName as NSString).deletingPathExtension
-        let ext = (fileName as NSString).pathExtension
-
         let candidates: [URL?] = [
-            Bundle.main.url(forResource: baseName, withExtension: ext, subdirectory: "data"),
-            Bundle.main.url(forResource: baseName, withExtension: ext),
-            Bundle.main.resourceURL?.appendingPathComponent("data").appendingPathComponent(fileName),
-            Bundle.main.resourceURL?.appendingPathComponent("Resources/data").appendingPathComponent(fileName),
-            Bundle.main.resourceURL?.appendingPathComponent(fileName)
+            Bundle.main.url(forResource: "content", withExtension: "json", subdirectory: "content"),
+            Bundle.main.url(forResource: "content", withExtension: "json"),
+            Bundle.main.resourceURL?.appendingPathComponent("content/content.json"),
+            Bundle.main.resourceURL?.appendingPathComponent("Resources/content/content.json"),
+            Bundle.main.resourceURL?.appendingPathComponent("content.json")
         ]
 
         for candidate in candidates {
             guard let url = candidate, FileManager.default.fileExists(atPath: url.path) else { continue }
-            return try String(contentsOf: url, encoding: .utf8)
+            return try Data(contentsOf: url)
         }
 
-        throw ContentStoreError.missingFile(fileName)
+        throw ContentStoreError.missingFile(overridesFileName)
     }
 
-    // MARK: - Parsing (matches web app)
+    // MARK: - JSON
 
-    static func parseLines(_ text: String) -> [String] {
-        text
-            .split(whereSeparator: \.isNewline)
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty && !$0.hasPrefix("#") }
+    static func decode(data: Data) throws -> ContentPack {
+        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        guard let json else { throw ContentStoreError.invalidContent }
+
+        let version = json["version"] as? Int ?? 1
+        let defaultLanguage = (json["defaultLanguage"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let languageRows = json["languages"] as? [[String: Any]] ?? []
+        let languages = languageRows.compactMap { row -> ContentLanguage? in
+            guard let code = row["code"] as? String, !code.isEmpty else { return nil }
+            let name = (row["name"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+            return ContentLanguage(code: code, name: (name?.isEmpty == false ? name! : code))
+        }
+
+        guard !languages.isEmpty else { throw ContentStoreError.invalidContent }
+        let resolvedDefault = languages.contains(where: { $0.code == defaultLanguage })
+            ? (defaultLanguage ?? languages[0].code)
+            : languages[0].code
+
+        var ui: [String: [String: String]] = [:]
+        if let uiObject = json["ui"] as? [String: Any] {
+            for (key, value) in uiObject {
+                if let map = value as? [String: String] {
+                    ui[key] = map
+                } else if let map = value as? [String: Any] {
+                    ui[key] = map.compactMapValues { $0 as? String }
+                }
+            }
+        }
+
+        let categoryRows = json["categories"] as? [[String: Any]] ?? []
+        let categories: [Category] = categoryRows.compactMap { row in
+            guard let id = row["id"] as? String, !id.isEmpty else { return nil }
+            var labels: [String: String] = [:]
+            if let map = row["labels"] as? [String: String] {
+                labels = map
+            } else if let map = row["labels"] as? [String: Any] {
+                labels = map.compactMapValues { $0 as? String }
+            }
+            if labels.isEmpty, let legacy = row["label"] as? String {
+                labels[resolvedDefault] = legacy
+            }
+
+            let questionRows = row["questions"] as? [[String: Any]] ?? []
+            let questions = questionRows.enumerated().compactMap { index, qrow -> Question? in
+                guard let prompt = qrow["prompt"] as? String else { return nil }
+                let trimmed = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty else { return nil }
+                let answer = (qrow["answer"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                return Question(id: "\(id):\(index)", prompt: trimmed, answer: answer)
+            }
+            guard !questions.isEmpty else { return nil }
+            return Category(id: id, labels: labels, questions: questions)
+        }
+
+        return ContentPack(
+            version: version,
+            languages: languages,
+            defaultLanguage: resolvedDefault,
+            ui: ui,
+            categories: categories
+        )
     }
 
-    static func parseCategoryLine(_ line: String) -> (id: String, label: String, file: String)? {
-        let parts = line.split(separator: "|", maxSplits: 2, omittingEmptySubsequences: false)
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        guard parts.count == 3, !parts[0].isEmpty, !parts[1].isEmpty, !parts[2].isEmpty else { return nil }
-        return (parts[0], parts[1], parts[2])
-    }
+    static func encode(pack: ContentPack) throws -> Data {
+        let languages = pack.languages.map { ["code": $0.code, "name": $0.name] }
+        let categories: [[String: Any]] = pack.categories.map { category in
+            [
+                "id": category.id,
+                "labels": category.labels,
+                "questions": category.questions.map { question in
+                    [
+                        "prompt": question.prompt,
+                        "answer": question.answer
+                    ]
+                }
+            ]
+        }
 
-    static func parseQuestionLine(_ line: String) -> (prompt: String, answer: String)? {
-        let parts = line.split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false)
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-        guard let prompt = parts.first, !prompt.isEmpty else { return nil }
-        let answer = parts.count > 1 ? parts[1] : ""
-        return (prompt, answer)
+        let object: [String: Any] = [
+            "version": pack.version,
+            "defaultLanguage": pack.defaultLanguage,
+            "languages": languages,
+            "ui": pack.ui,
+            "categories": categories
+        ]
+
+        return try JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted, .sortedKeys])
     }
 }
 
 enum ContentStoreError: LocalizedError {
     case missingFile(String)
+    case invalidContent
 
     var errorDescription: String? {
         switch self {
         case .missingFile(let name):
             return "Could not load \(name)"
+        case .invalidContent:
+            return "Content pack is invalid"
         }
     }
 }

@@ -19,8 +19,12 @@ struct ContentView: View {
                 GameView(viewModel: gameViewModel, contentStore: contentStore)
                     .tag(AppTab.game)
 
-                ConfigureView(viewModel: configureViewModel, language: $gameViewModel.language)
-                    .tag(AppTab.configure)
+                ConfigureView(
+                    viewModel: configureViewModel,
+                    contentStore: contentStore,
+                    languageCode: $gameViewModel.languageCode
+                )
+                .tag(AppTab.configure)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
@@ -56,13 +60,13 @@ struct ContentView: View {
                 tabButton(.game, title: gameViewModel.t("navGame"))
                 tabButton(.configure, title: gameViewModel.t("navConfigure"))
 
-                Picker(gameViewModel.t("languageLabel"), selection: $gameViewModel.language) {
-                    ForEach(AppLanguage.allCases) { language in
-                        Text(language.displayName).tag(language)
+                Picker(gameViewModel.t("languageLabel"), selection: $gameViewModel.languageCode) {
+                    ForEach(gameViewModel.availableLanguages) { language in
+                        Text(language.name).tag(language.code)
                     }
                 }
                 .pickerStyle(.menu)
-                .frame(width: 110)
+                .frame(minWidth: 110)
             }
         }
         .padding(.horizontal, 16)

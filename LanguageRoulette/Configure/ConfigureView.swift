@@ -2,7 +2,8 @@ import SwiftUI
 
 struct ConfigureView: View {
     @ObservedObject var viewModel: ConfigureViewModel
-    @Binding var language: AppLanguage
+    @ObservedObject var contentStore: ContentStore
+    @Binding var languageCode: String
 
     var body: some View {
         ScrollView {
@@ -26,12 +27,12 @@ struct ConfigureView: View {
 
                 HStack(spacing: 10) {
                     Button(t("saveChanges")) {
-                        viewModel.save(language: language)
+                        viewModel.save(languageCode: languageCode)
                     }
                     .buttonStyle(PrimaryButtonStyle())
 
                     Button(t("reloadDefaults")) {
-                        viewModel.resetToDefaults(language: language)
+                        viewModel.resetToDefaults(languageCode: languageCode)
                     }
                     .buttonStyle(SecondaryButtonStyle())
                 }
@@ -63,9 +64,18 @@ struct ConfigureView: View {
                     .font(.title3.bold())
                 Spacer()
                 Button(t("addCategory")) {
-                    viewModel.addCategory(language: language)
+                    viewModel.addCategory(languageCode: languageCode)
                 }
                 .buttonStyle(GhostButtonStyle())
+            }
+
+            labeledControl(title: t("editLanguage")) {
+                Picker("", selection: $viewModel.labelEditLanguage) {
+                    ForEach(viewModel.availableLanguages) { language in
+                        Text(language.name).tag(language.code)
+                    }
+                }
+                .pickerStyle(.menu)
             }
 
             if viewModel.categories.isEmpty {
@@ -78,9 +88,14 @@ struct ConfigureView: View {
                             Button {
                                 viewModel.selectedCategoryID = category.uuid
                             } label: {
-                                Text(category.label.isEmpty ? category.categoryId : category.label)
-                                    .font(.headline)
-                                    .foregroundStyle(viewModel.selectedCategoryID == category.uuid ? AppTheme.accent : AppTheme.ink)
+                                Text(
+                                    category.displayLabel(
+                                        languageCode: languageCode,
+                                        fallback: contentStore.defaultLanguage
+                                    )
+                                )
+                                .font(.headline)
+                                .foregroundStyle(viewModel.selectedCategoryID == category.uuid ? AppTheme.accent : AppTheme.ink)
                             }
                             Spacer()
                             Button(t("delete")) {
@@ -94,16 +109,12 @@ struct ConfigureView: View {
                             .onChange(of: category.categoryId) { _, _ in
                                 viewModel.hasUnsavedChanges = true
                             }
-                        TextField(t("wheelLabel"), text: $category.label)
-                            .textFieldStyle(.roundedBorder)
-                            .onChange(of: category.label) { _, _ in
-                                viewModel.hasUnsavedChanges = true
-                            }
-                        TextField(t("questionFile"), text: $category.file)
-                            .textFieldStyle(.roundedBorder)
-                            .onChange(of: category.file) { _, _ in
-                                viewModel.hasUnsavedChanges = true
-                            }
+
+                        TextField(
+                            "\(t("wheelLabel")) (\(viewModel.labelEditLanguage))",
+                            text: bindingForLabel(categoryID: category.uuid)
+                        )
+                        .textFieldStyle(.roundedBorder)
                     }
                     .padding(14)
                     .background(viewModel.selectedCategoryID == category.uuid ? AppTheme.gold.opacity(0.18) : AppTheme.surface)
@@ -174,7 +185,30 @@ struct ConfigureView: View {
         )
     }
 
+    private func bindingForLabel(categoryID: UUID) -> Binding<String> {
+        Binding(
+            get: {
+                guard let category = viewModel.categories.first(where: { $0.uuid == categoryID }) else { return "" }
+                return category.labels[viewModel.labelEditLanguage] ?? ""
+            },
+            set: { viewModel.updateLabel(categoryID: categoryID, languageCode: viewModel.labelEditLanguage, value: $0) }
+        )
+    }
+
+    private func labeledControl<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(AppTheme.muted)
+            content()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(8)
+                .background(AppTheme.paper)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+    }
+
     private func t(_ key: String) -> String {
-        L10n.t(key, language: language)
+        contentStore.localized(key, language: languageCode)
     }
 }

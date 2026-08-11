@@ -16,8 +16,7 @@ struct EditableQuestion: Identifiable, Equatable {
 struct EditableCategory: Identifiable, Equatable {
     let uuid: UUID
     var categoryId: String
-    var label: String
-    var file: String
+    var labels: [String: String]
     var questions: [EditableQuestion]
 
     var id: UUID { uuid }
@@ -25,15 +24,19 @@ struct EditableCategory: Identifiable, Equatable {
     init(
         uuid: UUID = UUID(),
         categoryId: String = "",
-        label: String = "",
-        file: String = "",
+        labels: [String: String] = [:],
         questions: [EditableQuestion] = []
     ) {
         self.uuid = uuid
         self.categoryId = categoryId
-        self.label = label
-        self.file = file
+        self.labels = labels
         self.questions = questions
+    }
+
+    func displayLabel(languageCode: String, fallback: String) -> String {
+        if let value = labels[languageCode], !value.isEmpty { return value }
+        if let value = labels[fallback], !value.isEmpty { return value }
+        return labels.values.first(where: { !$0.isEmpty }) ?? categoryId
     }
 }
 
@@ -41,6 +44,7 @@ struct EditableCategory: Identifiable, Equatable {
 final class ConfigureViewModel: ObservableObject {
     @Published var categories: [EditableCategory] = []
     @Published var selectedCategoryID: UUID?
+    @Published var labelEditLanguage: String = "en"
     @Published var statusMessage = ""
     @Published var hasUnsavedChanges = false
 
@@ -51,44 +55,38 @@ final class ConfigureViewModel: ObservableObject {
         loadFromStore()
     }
 
-    var selectedCategory: Binding<EditableCategory>? {
-        guard let selectedCategoryID,
-              let index = categories.firstIndex(where: { $0.uuid == selectedCategoryID }) else {
-            return nil
-        }
-        return Binding(
-            get: { self.categories[index] },
-            set: {
-                self.categories[index] = $0
-                self.hasUnsavedChanges = true
-                self.statusMessage = ""
-            }
-        )
+    var availableLanguages: [ContentLanguage] {
+        contentStore.languages
     }
 
     func loadFromStore() {
         categories = contentStore.categories.map { category in
             EditableCategory(
                 categoryId: category.id,
-                label: category.label,
-                file: category.file,
+                labels: category.labels,
                 questions: category.questions.map {
                     EditableQuestion(prompt: $0.prompt, answer: $0.answer)
                 }
             )
         }
         selectedCategoryID = categories.first?.uuid
+        if contentStore.languages.contains(where: { $0.code == labelEditLanguage }) == false {
+            labelEditLanguage = contentStore.defaultLanguage
+        }
         hasUnsavedChanges = false
         statusMessage = ""
     }
 
-    func addCategory(language: AppLanguage) {
+    func addCategory(languageCode: String) {
         let index = categories.count + 1
-        let file = "custom-\(index).txt"
+        let title = contentStore.localized("newQuestionFile", language: languageCode)
+        var labels: [String: String] = [:]
+        for language in contentStore.languages {
+            labels[language.code] = title
+        }
         let item = EditableCategory(
             categoryId: "custom-\(index)",
-            label: L10n.t("newQuestionFile", language: language),
-            file: file,
+            labels: labels,
             questions: [EditableQuestion(prompt: "Neue Frage?", answer: "")]
         )
         categories.append(item)
@@ -122,40 +120,54 @@ final class ConfigureViewModel: ObservableObject {
         statusMessage = ""
     }
 
-    func save(language: AppLanguage) {
+    func updateLabel(categoryID: UUID, languageCode: String, value: String) {
+        guard let index = categories.firstIndex(where: { $0.uuid == categoryID }) else { return }
+        categories[index].labels[languageCode] = value
+        hasUnsavedChanges = true
+        statusMessage = ""
+    }
+
+    func save(languageCode: String) {
         do {
             let mapped = categories.compactMap { item -> Category? in
                 let id = item.categoryId.trimmingCharacters(in: .whitespacesAndNewlines)
-                let label = item.label.trimmingCharacters(in: .whitespacesAndNewlines)
-                var file = item.file.trimmingCharacters(in: .whitespacesAndNewlines)
-                guard !id.isEmpty, !label.isEmpty else { return nil }
-                if file.isEmpty {
-                    file = "\(id).txt"
+                guard !id.isEmpty else { return nil }
+                var labels: [String: String] = [:]
+                for (code, value) in item.labels {
+                    let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !trimmed.isEmpty {
+                        labels[code] = trimmed
+                    }
                 }
-                if !file.hasSuffix(".txt") {
-                    file += ".txt"
-                }
+                guard !labels.isEmpty else { return nil }
                 let questions = item.questions.compactMap { q -> Question? in
                     let prompt = q.prompt.trimmingCharacters(in: .whitespacesAndNewlines)
                     guard !prompt.isEmpty else { return nil }
-                    return Question(id: "\(id):\(prompt)", prompt: prompt, answer: q.answer.trimmingCharacters(in: .whitespacesAndNewlines))
+                    return Question(
+                        id: "\(id):\(prompt)",
+                        prompt: prompt,
+                        answer: q.answer.trimmingCharacters(in: .whitespacesAndNewlines)
+                    )
                 }
                 guard !questions.isEmpty else { return nil }
-                return Category(id: id, label: label, file: file, questions: questions)
+                return Category(id: id, labels: labels, questions: questions)
             }
-            try contentStore.save(categories: mapped)
+
+            var pack = contentStore.pack
+            pack.categories = mapped
+            try contentStore.save(pack: pack)
             loadFromStore()
-            statusMessage = L10n.t("savedLocally", language: language)
+            statusMessage = contentStore.localized("savedLocally", language: languageCode)
         } catch {
             statusMessage = error.localizedDescription
         }
     }
 
-    func resetToDefaults(language: AppLanguage) {
+    func resetToDefaults(languageCode: String) {
         do {
             try contentStore.resetToDefaults()
             loadFromStore()
-            statusMessage = L10n.t("savedLocally", language: language)
+            statusMessage = contentStore.localized("savedLocally", language: languageCode)
         } catch {
             statusMessage = error.localizedDescription
         }

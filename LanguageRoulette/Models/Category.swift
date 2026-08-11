@@ -1,16 +1,31 @@
 import Foundation
 
+struct ContentLanguage: Identifiable, Equatable, Hashable, Codable {
+    var code: String
+    var name: String
+
+    var id: String { code }
+}
+
 struct Category: Identifiable, Equatable, Hashable {
     var id: String
-    var label: String
-    var file: String
+    var labels: [String: String]
     var questions: [Question]
 
-    init(id: String, label: String, file: String, questions: [Question] = []) {
+    init(id: String, labels: [String: String], questions: [Question] = []) {
         self.id = id
-        self.label = label
-        self.file = file
+        self.labels = labels
         self.questions = questions
+    }
+
+    func label(for languageCode: String, fallback: String = "en") -> String {
+        if let value = labels[languageCode], !value.isEmpty {
+            return value
+        }
+        if let value = labels[fallback], !value.isEmpty {
+            return value
+        }
+        return labels.values.first(where: { !$0.isEmpty }) ?? id
     }
 }
 
@@ -40,4 +55,12 @@ struct Player: Identifiable, Equatable {
         self.score = score
         self.spins = spins
     }
+}
+
+struct ContentPack: Equatable {
+    var version: Int
+    var languages: [ContentLanguage]
+    var defaultLanguage: String
+    var ui: [String: [String: String]]
+    var categories: [Category]
 }

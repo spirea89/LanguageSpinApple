@@ -45,7 +45,7 @@ struct GameView: View {
         .onChange(of: contentStore.categories) { _, _ in
             viewModel.attach(contentStore: contentStore)
         }
-        .onChange(of: viewModel.language) { _, _ in
+        .onChange(of: viewModel.languageCode) { _, _ in
             viewModel.refreshLanguageLabels()
         }
     }
@@ -66,6 +66,8 @@ struct GameView: View {
     private var wheelColumn: some View {
         WheelView(
             categories: contentStore.categories,
+            languageCode: viewModel.languageCode,
+            fallbackLanguage: contentStore.defaultLanguage,
             rotation: viewModel.rotation,
             isSpinning: viewModel.spinning
         )

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Language Roulette Admin</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">DE</span>
+        <div>
+          <strong>Language Roulette Admin</strong>
+          <p>Manage languages, UI strings, categories, and questions</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="reloadButton" type="button" class="ghost">Reload</button>
+        <button id="downloadButton" type="button" class="secondary">Download content.json</button>
+        <button id="saveButton" type="button" class="primary">Save to project</button>
+      </div>
+    </header>
+
+    <main class="shell">
+      <p id="status" class="status" role="status"></p>
+
+      <nav class="tabs" aria-label="Admin sections">
+        <button type="button" class="tab active" data-tab="languages">Languages</button>
+        <button type="button" class="tab" data-tab="ui">UI strings</button>
+        <button type="button" class="tab" data-tab="categories">Categories</button>
+        <button type="button" class="tab" data-tab="questions">Questions</button>
+      </nav>
+
+      <section id="panel-languages" class="panel active">
+        <div class="panel-head">
+          <div>
+            <h1>Languages</h1>
+            <p>Add a language code, then fill UI strings and category labels for it.</p>
+          </div>
+          <button id="addLanguageButton" type="button" class="secondary">Add language</button>
+        </div>
+        <div class="form-row">
+          <label>
+            Default language
+            <select id="defaultLanguage"></select>
+          </label>
+        </div>
+        <div id="languageRows" class="stack"></div>
+      </section>
+
+      <section id="panel-ui" class="panel">
+        <div class="panel-head">
+          <div>
+            <h1>UI strings</h1>
+            <p>App chrome translations. Missing values fall back to the default language.</p>
+          </div>
+          <button id="addUiKeyButton" type="button" class="secondary">Add UI key</button>
+        </div>
+        <div class="table-wrap">
+          <table id="uiTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="panel-categories" class="panel">
+        <div class="panel-head">
+          <div>
+            <h1>Categories</h1>
+            <p>Wheel labels per language. These update in the app when the language switcher changes.</p>
+          </div>
+          <button id="addCategoryButton" type="button" class="secondary">Add category</button>
+        </div>
+        <div id="categoryRows" class="stack"></div>
+      </section>
+
+      <section id="panel-questions" class="panel">
+        <div class="panel-head">
+          <div>
+            <h1>Questions</h1>
+            <p>Learning prompts stay in German (or your target practice language).</p>
+          </div>
+          <div class="inline-actions">
+            <label>
+              Category
+              <select id="questionCategorySelect"></select>
+            </label>
+            <button id="addQuestionButton" type="button" class="secondary">Add question</button>
+          </div>
+        </div>
+        <div id="questionRows" class="stack"></div>
+      </section>
+
+      <section class="help">
+        <h2>How to use with the iOS app</h2>
+        <ol>
+          <li>Run <code>node admin/dev-server.cjs</code> from the repo root.</li>
+          <li>Open <code>http://localhost:5180</code> and edit content.</li>
+          <li>Click <strong>Save to project</strong> (writes <code>content/content.json</code> and the iOS resource copy).</li>
+          <li>Rebuild the iOS app in Xcode so it picks up the bundled pack.</li>
+        </ol>
+        <p>Without the local server, use <strong>Download content.json</strong> and replace <code>LanguageRoulette/Resources/content/content.json</code> manually.</p>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
