@@ -318,6 +318,165 @@
     return escapeHtml(value).replaceAll("'", "&#39;");
   }
 
+  const STORAGE_KEYS = {
+    repo: "lr-admin-repo",
+    branch: "lr-admin-branch",
+    token: "lr-admin-token"
+  };
+
+  const DEFAULT_REPO = "spirea89/LanguageSpinApple";
+  const DEFAULT_BRANCH = "main";
+  const CONTENT_PATHS = [
+    "content/content.json",
+    "admin/content/content.json",
+    "LanguageRoulette/Resources/content/content.json"
+  ];
+
+  const githubRepoInput = document.querySelector("#githubRepo");
+  const githubBranchInput = document.querySelector("#githubBranch");
+  const githubTokenInput = document.querySelector("#githubToken");
+
+  function isLocalHost() {
+    const host = window.location.hostname;
+    return host === "localhost" || host === "127.0.0.1";
+  }
+
+  function loadGithubSettings() {
+    githubRepoInput.value = localStorage.getItem(STORAGE_KEYS.repo) || DEFAULT_REPO;
+    githubBranchInput.value = localStorage.getItem(STORAGE_KEYS.branch) || DEFAULT_BRANCH;
+    githubTokenInput.value = localStorage.getItem(STORAGE_KEYS.token) || "";
+  }
+
+  function saveGithubSettings() {
+    localStorage.setItem(STORAGE_KEYS.repo, githubRepoInput.value.trim() || DEFAULT_REPO);
+    localStorage.setItem(STORAGE_KEYS.branch, githubBranchInput.value.trim() || DEFAULT_BRANCH);
+    const token = githubTokenInput.value.trim();
+    if (token) {
+      localStorage.setItem(STORAGE_KEYS.token, token);
+    }
+    setStatus("GitHub settings saved in this browser.");
+  }
+
+  function clearGithubToken() {
+    localStorage.removeItem(STORAGE_KEYS.token);
+    githubTokenInput.value = "";
+    setStatus("GitHub token cleared from this browser.");
+  }
+
+  function getGithubSettings() {
+    return {
+      repo: (githubRepoInput.value || localStorage.getItem(STORAGE_KEYS.repo) || DEFAULT_REPO).trim(),
+      branch: (githubBranchInput.value || localStorage.getItem(STORAGE_KEYS.branch) || DEFAULT_BRANCH).trim(),
+      token: (githubTokenInput.value || localStorage.getItem(STORAGE_KEYS.token) || "").trim()
+    };
+  }
+
+  async function githubApi(path, { method = "GET", token, body } = {}) {
+    const response = await fetch(`https://api.github.com${path}`, {
+      method,
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "X-GitHub-Api-Version": "2022-11-28",
+        ...(body ? { "Content-Type": "application/json" } : {})
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    const text = await response.text();
+    let data = null;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch (_error) {
+      data = { message: text };
+    }
+    if (!response.ok) {
+      throw new Error(data?.message || `GitHub API error (${response.status})`);
+    }
+    return data;
+  }
+
+  function utf8ToBase64(text) {
+    const bytes = new TextEncoder().encode(text);
+    let binary = "";
+    bytes.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+    return btoa(binary);
+  }
+
+  async function savePackToGithub() {
+    const { repo, branch, token } = getGithubSettings();
+    if (!repo.includes("/")) {
+      throw new Error("Repository must look like owner/name.");
+    }
+    if (!token) {
+      throw new Error("Add a GitHub personal access token with Contents write access, then click Remember settings.");
+    }
+
+    const pretty = `${JSON.stringify(state.pack, null, 2)}\n`;
+    const encoded = utf8ToBase64(pretty);
+    const [owner, name] = repo.split("/");
+
+    const ref = await githubApi(`/repos/${owner}/${name}/git/ref/heads/${encodeURIComponent(branch)}`, { token });
+    const latestCommitSha = ref.object.sha;
+    const latestCommit = await githubApi(`/repos/${owner}/${name}/git/commits/${latestCommitSha}`, { token });
+    const baseTreeSha = latestCommit.tree.sha;
+
+    const tree = [];
+    for (const filePath of CONTENT_PATHS) {
+      const blob = await githubApi(`/repos/${owner}/${name}/git/blobs`, {
+        method: "POST",
+        token,
+        body: { content: encoded, encoding: "base64" }
+      });
+      tree.push({
+        path: filePath,
+        mode: "100644",
+        type: "blob",
+        sha: blob.sha
+      });
+    }
+
+    const newTree = await githubApi(`/repos/${owner}/${name}/git/trees`, {
+      method: "POST",
+      token,
+      body: {
+        base_tree: baseTreeSha,
+        tree
+      }
+    });
+
+    const newCommit = await githubApi(`/repos/${owner}/${name}/git/commits`, {
+      method: "POST",
+      token,
+      body: {
+        message: "Update Language Roulette content pack from admin",
+        tree: newTree.sha,
+        parents: [latestCommitSha]
+      }
+    });
+
+    await githubApi(`/repos/${owner}/${name}/git/refs/heads/${encodeURIComponent(branch)}`, {
+      method: "PATCH",
+      token,
+      body: { sha: newCommit.sha }
+    });
+
+    return newCommit.sha;
+  }
+
+  async function savePackLocally() {
+    const response = await fetch("/api/save-content", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state.pack)
+    });
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || "Local save failed");
+    }
+  }
+
   function downloadPack() {
     const blob = new Blob([JSON.stringify(state.pack, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -330,19 +489,22 @@
   }
 
   async function savePack() {
+    setStatus("Saving...");
     try {
-      const response = await fetch("/api/save-content", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(state.pack)
-      });
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || "Save failed");
+      if (isLocalHost()) {
+        try {
+          await savePackLocally();
+          setStatus("Saved locally to content/, admin/content/, and LanguageRoulette/Resources/content/.");
+          return;
+        } catch (_localError) {
+          // Fall through to GitHub save when local API is unavailable.
+        }
       }
-      setStatus("Saved content.json into content/, admin/content/, and LanguageRoulette/Resources/content/.");
+
+      const sha = await savePackToGithub();
+      setStatus(`Saved to GitHub (${sha.slice(0, 7)}). Pull on your Mac, then rebuild the iOS app.`);
     } catch (error) {
-      setStatus(`${error.message} Use Download if the local admin server is not running.`, true);
+      setStatus(error.message || "Save failed", true);
     }
   }
 
@@ -420,7 +582,10 @@
   document.querySelector("#reloadButton").addEventListener("click", () => {
     loadPack().catch((error) => setStatus(error.message, true));
   });
+  document.querySelector("#saveGithubSettings").addEventListener("click", saveGithubSettings);
+  document.querySelector("#clearGithubToken").addEventListener("click", clearGithubToken);
 
+  loadGithubSettings();
   renderTabs();
   loadPack().catch((error) => setStatus(error.message, true));
 })();

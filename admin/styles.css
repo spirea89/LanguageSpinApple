@@ -225,10 +225,12 @@ th {
   font-size: 0.82rem;
 }
 
-.help {
-  margin-top: 36px;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
+.github-card {
+  margin-bottom: 22px;
+}
+
+.github-card h1 {
+  font-size: 1.25rem;
 }
 
 .row-actions {

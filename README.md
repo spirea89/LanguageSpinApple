@@ -63,7 +63,21 @@ LanguageRoulette/Resources/content/content.json
 - **categories.labels**: wheel labels (switch with the UI language)
 - **questions**: practice prompts (kept in German for this learning game)
 
-## Web admin (add languages yourself)
+## Web admin (GitHub Pages + auto-commit)
+
+The admin can run on GitHub Pages. Saving there commits the content pack into the repository.
+
+1. In GitHub: **Settings → Pages → Source = GitHub Actions**.
+2. After the Pages workflow runs, open:
+   `https://spirea89.github.io/LanguageSpinApple/`
+3. Create a fine-grained personal access token with **Contents: Read and write** for this repo.
+4. Paste the token in the admin **GitHub save settings**, click **Remember settings**.
+5. Edit languages/categories and click **Save to GitHub**.
+6. On your Mac: `git pull`, then rebuild the iOS app in Xcode.
+
+The token is stored only in your browser (`localStorage`). Do not commit it.
+
+### Local admin (optional)
 
 ```bash
 python3 admin/dev-server.py
@@ -83,11 +97,9 @@ In the admin you can:
 2. Fill UI strings for the new language
 3. Fill category labels for the new language
 4. Edit questions
-5. Click **Save to project** (writes `content/content.json`, `admin/content/content.json`, and `LanguageRoulette/Resources/content/content.json`)
+5. Click **Save to GitHub** (or local Save when using the Python/Node server)
 
 Then rebuild the iOS app in Xcode.
-
-If the server is not running, use **Download content.json** and replace the iOS resource file manually.
 
 ## In-app Configure
 

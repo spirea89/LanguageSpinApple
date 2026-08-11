@@ -18,12 +18,43 @@
       <div class="top-actions">
         <button id="reloadButton" type="button" class="ghost">Reload</button>
         <button id="downloadButton" type="button" class="secondary">Download content.json</button>
-        <button id="saveButton" type="button" class="primary">Save to project</button>
+        <button id="saveButton" type="button" class="primary">Save to GitHub</button>
       </div>
     </header>
 
     <main class="shell">
       <p id="status" class="status" role="status"></p>
+
+      <section class="card github-card">
+        <div class="panel-head">
+          <div>
+            <h1>GitHub save settings</h1>
+            <p>
+              On GitHub Pages, Save commits <code>content.json</code> into the repo automatically.
+              Create a fine-grained token with <strong>Contents: Read and write</strong> for this repository.
+              The token stays in your browser only (localStorage) and is never committed.
+            </p>
+          </div>
+        </div>
+        <div class="grid-3">
+          <label>
+            Repository
+            <input id="githubRepo" placeholder="spirea89/LanguageSpinApple" autocomplete="off">
+          </label>
+          <label>
+            Branch
+            <input id="githubBranch" placeholder="main" autocomplete="off">
+          </label>
+          <label>
+            Personal access token
+            <input id="githubToken" type="password" placeholder="github_pat_..." autocomplete="off">
+          </label>
+        </div>
+        <div class="row-actions">
+          <button id="saveGithubSettings" type="button" class="secondary">Remember settings</button>
+          <button id="clearGithubToken" type="button" class="ghost">Clear token</button>
+        </div>
+      </section>
 
       <nav class="tabs" aria-label="Admin sections">
         <button type="button" class="tab active" data-tab="languages">Languages</button>
@@ -94,14 +125,15 @@
       </section>
 
       <section class="help">
-        <h2>How to use with the iOS app</h2>
+        <h2>How this works</h2>
         <ol>
-          <li>Run <code>python3 admin/dev-server.py</code> (or <code>node admin/dev-server.cjs</code>) from the repo root.</li>
-          <li>Open <code>http://localhost:5180</code> and edit content.</li>
-          <li>Click <strong>Save to project</strong> (writes <code>content/content.json</code> and the iOS resource copy).</li>
-          <li>Rebuild the iOS app in Xcode so it picks up the bundled pack.</li>
+          <li>Enable GitHub Pages for this repo: Settings → Pages → Source = <strong>GitHub Actions</strong>.</li>
+          <li>Open the published admin site (usually <code>https://spirea89.github.io/LanguageSpinApple/</code>).</li>
+          <li>Paste a GitHub token with Contents write access and click <strong>Remember settings</strong>.</li>
+          <li>Edit languages/categories, then click <strong>Save to GitHub</strong>. That commits the JSON files on <code>main</code>.</li>
+          <li>On your Mac: <code>git pull</code>, then rebuild the iOS app in Xcode.</li>
         </ol>
-        <p>Without the local server, use <strong>Download content.json</strong> and replace <code>LanguageRoulette/Resources/content/content.json</code> manually.</p>
+        <p>Local editing still works with <code>python3 admin/dev-server.py</code>. Save will prefer the local server when available.</p>
       </section>
     </main>
 
