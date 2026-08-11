@@ -9,12 +9,24 @@ struct ConfigureView: View {
             header
             Divider().overlay(AppTheme.line)
 
-            HStack(alignment: .top, spacing: 0) {
-                wordList
-                    .frame(maxWidth: 220)
-                Divider().overlay(AppTheme.line)
-                editorPane
-                    .frame(maxWidth: .infinity)
+            GeometryReader { geo in
+                if geo.size.width > 700 {
+                    HStack(alignment: .top, spacing: 0) {
+                        wordList
+                            .frame(width: min(260, geo.size.width * 0.38))
+                        Divider().overlay(AppTheme.line)
+                        editorPane
+                            .frame(maxWidth: .infinity)
+                    }
+                } else {
+                    VStack(spacing: 0) {
+                        wordList
+                            .frame(height: geo.size.height * 0.42)
+                        Divider().overlay(AppTheme.line)
+                        editorPane
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                }
             }
         }
         .background(Color.clear)
@@ -40,9 +52,10 @@ struct ConfigureView: View {
                 Button("Save") { viewModel.save() }
                     .buttonStyle(PrimaryButtonStyle(disabled: !viewModel.hasUnsavedChanges))
                     .disabled(!viewModel.hasUnsavedChanges)
-                Button("Reload defaults") { viewModel.resetToDefaults() }
-                    .buttonStyle(GhostButtonStyle())
             }
+
+            Button("Reload defaults") { viewModel.resetToDefaults() }
+                .buttonStyle(GhostButtonStyle())
 
             if let status = viewModel.statusMessage {
                 Text(status)
@@ -71,8 +84,8 @@ struct ConfigureView: View {
                                 Text(item.emoji)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(item.word.isEmpty ? "New word" : item.word)
-                                        .font(AppTheme.bodyFont.weight(.semibold))
-                                        .foregroundStyle(AppTheme.ink)
+                        .font(AppTheme.bodyFont)
+                        .foregroundStyle(AppTheme.ink)
                                         .lineLimit(1)
                                     Text(item.article.label)
                                         .font(AppTheme.captionFont)
