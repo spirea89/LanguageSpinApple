@@ -7,7 +7,7 @@ This repository also includes a **web admin** for managing languages, UI transla
 ## Requirements
 
 - macOS with Xcode 15 or newer (iOS 17+)
-- Node.js (optional, for the local web admin save server)
+- Python 3 (for the local web admin save server; Node.js also works)
 - Apple Developer account for device installs / App Store submission
 
 ## Open and run the iOS app
@@ -64,6 +64,12 @@ LanguageRoulette/Resources/content/content.json
 - **questions**: practice prompts (kept in German for this learning game)
 
 ## Web admin (add languages yourself)
+
+```bash
+python3 admin/dev-server.py
+```
+
+Or with Node.js:
 
 ```bash
 node admin/dev-server.cjs
