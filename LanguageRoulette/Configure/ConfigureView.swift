@@ -10,17 +10,17 @@ struct ConfigureView: View {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(t("configEyebrow"))
-                        .font(.caption.weight(.bold))
+                        .font(AppTheme.rounded(.caption, weight: .bold))
                         .tracking(1.1)
-                        .foregroundStyle(AppTheme.muted)
+                        .foregroundStyle(.white.opacity(0.7))
                     Text(t("configTitle"))
-                        .font(.largeTitle.bold())
-                        .foregroundStyle(AppTheme.ink)
+                        .font(AppTheme.rounded(.largeTitle, weight: .black))
+                        .foregroundStyle(.white)
                 }
 
                 Text(t("staticNote"))
-                    .font(.subheadline)
-                    .foregroundStyle(AppTheme.muted)
+                    .font(AppTheme.rounded(.subheadline, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.78))
 
                 categoriesSection
                 questionsSection
@@ -39,19 +39,20 @@ struct ConfigureView: View {
 
                 if viewModel.hasUnsavedChanges {
                     Text(t("unsaved"))
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(AppTheme.accent)
+                        .font(AppTheme.rounded(.footnote, weight: .semibold))
+                        .foregroundStyle(AppTheme.gold)
                 }
 
                 if !viewModel.statusMessage.isEmpty {
                     Text(viewModel.statusMessage)
-                        .font(.footnote)
+                        .font(AppTheme.rounded(.footnote, weight: .semibold))
                         .foregroundStyle(AppTheme.green)
                 }
             }
             .padding(20)
+            .padding(.top, 40)
         }
-        .background(AppTheme.paper.ignoresSafeArea())
+        .background(Color.clear)
         .onAppear {
             viewModel.loadFromStore()
         }
@@ -61,7 +62,8 @@ struct ConfigureView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(t("categories"))
-                    .font(.title3.bold())
+                    .font(AppTheme.rounded(.title3, weight: .bold))
+                    .foregroundStyle(.white)
                 Spacer()
                 Button(t("addCategory")) {
                     viewModel.addCategory(languageCode: languageCode)
@@ -80,7 +82,7 @@ struct ConfigureView: View {
 
             if viewModel.categories.isEmpty {
                 Text(t("noCategories"))
-                    .foregroundStyle(AppTheme.muted)
+                    .foregroundStyle(.white.opacity(0.75))
             } else {
                 ForEach($viewModel.categories) { $category in
                     VStack(alignment: .leading, spacing: 8) {
@@ -101,7 +103,7 @@ struct ConfigureView: View {
                             Button(t("delete")) {
                                 viewModel.deleteCategory(category)
                             }
-                            .buttonStyle(GhostButtonStyle())
+                            .buttonStyle(GhostButtonStyle(onDark: false))
                         }
 
                         TextField(t("categoryId"), text: $category.categoryId)
@@ -117,12 +119,13 @@ struct ConfigureView: View {
                         .textFieldStyle(.roundedBorder)
                     }
                     .padding(14)
-                    .background(viewModel.selectedCategoryID == category.uuid ? AppTheme.gold.opacity(0.18) : AppTheme.surface)
+                    .background(viewModel.selectedCategoryID == category.uuid ? AppTheme.gold.opacity(0.22) : Color.white)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(AppTheme.line, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(AppTheme.cardLine, lineWidth: 1)
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .colorScheme(.light)
                 }
             }
         }
@@ -132,7 +135,8 @@ struct ConfigureView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(t("questionsAndAnswers"))
-                    .font(.title3.bold())
+                    .font(AppTheme.rounded(.title3, weight: .bold))
+                    .foregroundStyle(.white)
                 Spacer()
                 Button(t("addQuestion")) {
                     viewModel.addQuestion()
@@ -151,22 +155,23 @@ struct ConfigureView: View {
                         Button(t("delete")) {
                             viewModel.deleteQuestion(question)
                         }
-                        .buttonStyle(GhostButtonStyle())
+                        .buttonStyle(GhostButtonStyle(onDark: false))
                     }
                     .padding(14)
-                    .background(AppTheme.surface)
+                    .background(Color.white)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(AppTheme.line, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(AppTheme.cardLine, lineWidth: 1)
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .colorScheme(.light)
                     .onChange(of: question) { _, _ in
                         viewModel.hasUnsavedChanges = true
                     }
                 }
             } else {
                 Text(t("noCategories"))
-                    .foregroundStyle(AppTheme.muted)
+                    .foregroundStyle(.white.opacity(0.75))
             }
         }
     }
@@ -198,13 +203,14 @@ struct ConfigureView: View {
     private func labeledControl<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(AppTheme.muted)
+                .font(AppTheme.rounded(.caption, weight: .bold))
+                .foregroundStyle(.white.opacity(0.75))
             content()
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(8)
-                .background(AppTheme.paper)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .colorScheme(.light)
         }
     }
 

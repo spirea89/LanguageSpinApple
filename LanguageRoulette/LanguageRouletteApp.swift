@@ -7,7 +7,7 @@ struct LanguageRouletteApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(contentStore: contentStore)
-                .preferredColorScheme(.light)
+                .preferredColorScheme(.dark)
         }
     }
 }

@@ -13,22 +13,23 @@ struct ContentView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            topBar
-            TabView(selection: $selectedTab) {
-                GameView(viewModel: gameViewModel, contentStore: contentStore)
-                    .tag(AppTab.game)
+        ZStack(alignment: .top) {
+            PlayfulBackground()
 
-                ConfigureView(
-                    viewModel: configureViewModel,
-                    contentStore: contentStore,
-                    languageCode: $gameViewModel.languageCode
-                )
-                .tag(AppTab.configure)
+            Group {
+                if selectedTab == .game {
+                    GameView(viewModel: gameViewModel, contentStore: contentStore)
+                } else {
+                    ConfigureView(
+                        viewModel: configureViewModel,
+                        contentStore: contentStore,
+                        languageCode: $gameViewModel.languageCode
+                    )
+                }
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+
+            chrome
         }
-        .background(AppTheme.paper.ignoresSafeArea())
         .onChange(of: selectedTab) { _, newValue in
             if newValue == .game {
                 contentStore.reload()
@@ -39,60 +40,53 @@ struct ContentView: View {
         }
     }
 
-    private var topBar: some View {
-        HStack(spacing: 12) {
-            HStack(spacing: 10) {
-                Text("DE")
-                    .font(.caption.weight(.heavy))
-                    .foregroundStyle(.white)
-                    .frame(width: 38, height: 38)
-                    .background(AppTheme.ink)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                Text("Language Roulette")
-                    .font(.headline.weight(.heavy))
-                    .foregroundStyle(AppTheme.ink)
+    private var chrome: some View {
+        HStack(spacing: 8) {
+            if selectedTab == .configure {
+                Button {
+                    selectedTab = .game
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 13, weight: .bold))
+                        .glassChip()
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(gameViewModel.t("navGame"))
             }
 
             Spacer()
 
-            HStack(spacing: 6) {
-                tabButton(.game, title: gameViewModel.t("navGame"))
-                tabButton(.configure, title: gameViewModel.t("navConfigure"))
-
+            Menu {
                 Picker(gameViewModel.t("languageLabel"), selection: $gameViewModel.languageCode) {
                     ForEach(gameViewModel.availableLanguages) { language in
                         Text(language.name).tag(language.code)
                     }
                 }
-                .pickerStyle(.menu)
-                .frame(minWidth: 110)
+            } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: "globe")
+                    Text(gameViewModel.languageCode.uppercased())
+                }
+                .glassChip()
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(gameViewModel.t("languageLabel"))
+
+            if selectedTab == .game {
+                Button {
+                    selectedTab = .configure
+                } label: {
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 13, weight: .bold))
+                        .glassChip()
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(gameViewModel.t("navConfigure"))
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(AppTheme.paper.opacity(0.95))
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(AppTheme.line)
-                .frame(height: 1)
-        }
-    }
-
-    private func tabButton(_ tab: AppTab, title: String) -> some View {
-        Button {
-            selectedTab = tab
-        } label: {
-            Text(title)
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(selectedTab == tab ? AppTheme.ink : AppTheme.muted)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 9)
-                .background(selectedTab == tab ? AppTheme.surface : Color.clear)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .shadow(color: selectedTab == tab ? AppTheme.ink.opacity(0.06) : .clear, radius: 1, y: 1)
-        }
-        .buttonStyle(.plain)
+        .padding(.top, 8)
+        .tint(.white)
     }
 }
 

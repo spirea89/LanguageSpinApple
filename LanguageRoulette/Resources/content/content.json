@@ -57,8 +57,8 @@
       "de": "Wer spielt mit?"
     },
     "playerSetupHint": {
-      "en": "Add names and how many spins each player gets, then tap Next.",
-      "de": "Namen und Drehungen pro Spieler eintragen, dann auf Weiter tippen."
+      "en": "Name your crew, pick the spins, then hit Next.",
+      "de": "Namen eintragen, Drehungen wählen, dann auf Weiter."
     },
     "categorySetupEyebrow": {
       "en": "Wheel",
@@ -69,8 +69,8 @@
       "de": "Kategorien wählen"
     },
     "categorySetupHint": {
-      "en": "Pick the topics you want on the wheel.",
-      "de": "Wähle die Themen, die aufs Rad sollen."
+      "en": "Tap the topics you want on the wheel.",
+      "de": "Tippe die Themen an, die aufs Rad sollen."
     },
     "selectAll": {
       "en": "Select all",
@@ -89,8 +89,8 @@
       "de": "Wähle mindestens eine Kategorie."
     },
     "startGame": {
-      "en": "Start game",
-      "de": "Spiel starten"
+      "en": "Let's go!",
+      "de": "Los geht's!"
     },
     "yourTurn": {
       "en": "Your turn",
