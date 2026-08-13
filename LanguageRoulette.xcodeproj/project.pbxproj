@@ -15,6 +15,7 @@
 		57155EBC6EE34CAB8B5549BF /* ConfigureViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4264B130CBE4C6AAD40D02B /* ConfigureViewModel.swift */; };
 		C16FD9CD4DF148428CEE879D /* CelebrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCD22CC99BB4BE89A532F05 /* CelebrationView.swift */; };
 		A9BE4FE6860D4FD79031EB8C /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 319DEC99C71A43B5BD957DD7 /* GameView.swift */; };
+		E8C11A22B4D04F6AA11C9D01 /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7D44E10A1C24C8F9E55F201 /* SetupView.swift */; };
 		4B05435862F94703AF77A6EB /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E22542A9384B43AA98BDC4 /* GameViewModel.swift */; };
 		DF3C0D1DCF3F461084DA9111 /* ScoreboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE4AB59DFC4F47EF9D037A48 /* ScoreboardView.swift */; };
 		78255C58853D4C20AA8B73AB /* WheelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25D310032B1A42A299A33821 /* WheelView.swift */; };
@@ -36,6 +37,7 @@
 		E4264B130CBE4C6AAD40D02B /* ConfigureViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureViewModel.swift; sourceTree = "<group>"; };
 		4BCD22CC99BB4BE89A532F05 /* CelebrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CelebrationView.swift; sourceTree = "<group>"; };
 		319DEC99C71A43B5BD957DD7 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		B7D44E10A1C24C8F9E55F201 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
 		E1E22542A9384B43AA98BDC4 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		FE4AB59DFC4F47EF9D037A48 /* ScoreboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreboardView.swift; sourceTree = "<group>"; };
 		25D310032B1A42A299A33821 /* WheelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WheelView.swift; sourceTree = "<group>"; };
@@ -105,6 +107,7 @@
 			children = (
 				4BCD22CC99BB4BE89A532F05 /* CelebrationView.swift */,
 				319DEC99C71A43B5BD957DD7 /* GameView.swift */,
+				B7D44E10A1C24C8F9E55F201 /* SetupView.swift */,
 				E1E22542A9384B43AA98BDC4 /* GameViewModel.swift */,
 				FE4AB59DFC4F47EF9D037A48 /* ScoreboardView.swift */,
 				25D310032B1A42A299A33821 /* WheelView.swift */,
@@ -235,6 +238,7 @@
 				57155EBC6EE34CAB8B5549BF /* ConfigureViewModel.swift in Sources */,
 				C16FD9CD4DF148428CEE879D /* CelebrationView.swift in Sources */,
 				A9BE4FE6860D4FD79031EB8C /* GameView.swift in Sources */,
+				E8C11A22B4D04F6AA11C9D01 /* SetupView.swift in Sources */,
 				4B05435862F94703AF77A6EB /* GameViewModel.swift in Sources */,
 				DF3C0D1DCF3F461084DA9111 /* ScoreboardView.swift in Sources */,
 				78255C58853D4C20AA8B73AB /* WheelView.swift in Sources */,

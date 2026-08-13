@@ -10,24 +10,27 @@ struct ScoreboardView: View {
             if players.isEmpty {
                 Text(emptyText)
                     .foregroundStyle(AppTheme.muted)
-                    .font(.subheadline)
+                    .font(AppTheme.rounded(.subheadline, weight: .semibold))
             } else {
                 ForEach(sortedPlayers, id: \.player.id) { item in
-                    HStack {
+                    HStack(spacing: 10) {
+                        Text(AppTheme.playerEmoji(at: item.index))
+                            .font(.title2)
                         Text(item.player.name)
-                            .fontWeight(item.index == currentPlayerIndex ? .bold : .semibold)
+                            .font(AppTheme.rounded(.headline, weight: item.index == currentPlayerIndex ? .heavy : .bold))
                         Spacer()
                         Text("\(item.player.score)")
-                            .fontWeight(.bold)
+                            .font(AppTheme.rounded(.title3, weight: .heavy))
+                            .foregroundStyle(AppTheme.playerColor(at: item.index))
                     }
                     .padding(.horizontal, 14)
                     .padding(.vertical, 12)
-                    .background(item.index == currentPlayerIndex ? AppTheme.gold.opacity(0.25) : AppTheme.surface)
+                    .background(item.index == currentPlayerIndex ? AppTheme.gold.opacity(0.32) : AppTheme.surface)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(AppTheme.line, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(item.index == currentPlayerIndex ? AppTheme.gold : AppTheme.line, lineWidth: 2)
                     )
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                 }
             }
         }

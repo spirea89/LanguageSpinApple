@@ -13,7 +13,7 @@
   "defaultLanguage": "en",
   "ui": {
     "navGame": {
-      "en": "Game",
+      "en": "Play",
       "de": "Spiel"
     },
     "navConfigure": {
@@ -29,12 +29,12 @@
       "de": "Sprache"
     },
     "gameEyebrow": {
-      "en": "German practice wheel",
-      "de": "Deutsch-Übungsrad"
+      "en": "Let's play German!",
+      "de": "Lass uns Deutsch spielen!"
     },
     "gameTitle": {
-      "en": "Spin, answer, score, repeat.",
-      "de": "Drehen, antworten, punkten."
+      "en": "Spin the colorful wheel!",
+      "de": "Dreh das bunte Rad!"
     },
     "start": {
       "en": "Start",
@@ -81,8 +81,8 @@
       "de": "30 Drehungen"
     },
     "newGame": {
-      "en": "New Game",
-      "de": "Neues Spiel"
+      "en": "Change players",
+      "de": "Spieler ändern"
     },
     "resetScores": {
       "en": "Reset Scores",
@@ -101,24 +101,24 @@
       "de": "Frage"
     },
     "scoreAnswer": {
-      "en": "Score this answer",
-      "de": "Antwort bewerten"
+      "en": "Give stars",
+      "de": "Sterne geben"
     },
     "replayQuestion": {
-      "en": "Play question again",
-      "de": "Frage erneut abspielen"
+      "en": "Hear again",
+      "de": "Nochmal hören"
     },
     "showExample": {
-      "en": "Show example",
-      "de": "Beispiel zeigen"
+      "en": "Hint",
+      "de": "Tipp"
     },
     "spinToChoose": {
       "en": "Spin to choose",
       "de": "Drehen zum Auswählen"
     },
     "intro": {
-      "en": "Add players, choose the round count, then press Start.",
-      "de": "Spieler eintragen, Rundenzahl wählen und Start drücken."
+      "en": "Choose players and spins, then tap Let's spin!",
+      "de": "Wähle Spieler und Drehungen, dann tippe auf Los drehen!"
     },
     "noPlayers": {
       "en": "No players yet.",
@@ -153,28 +153,28 @@
       "de": "Nächster Zug"
     },
     "pressStart": {
-      "en": "press Start.",
-      "de": "drücke Start."
+      "en": "spin the wheel!",
+      "de": "dreh das Rad!"
     },
     "scoresReset": {
-      "en": "Scores are reset. Press Start when ready.",
-      "de": "Punkte sind zurückgesetzt. Drücke Start, wenn du bereit bist."
+      "en": "Scores are reset. Spin when you are ready!",
+      "de": "Punkte sind zurückgesetzt. Dreh, wenn du bereit bist!"
     },
     "dataError": {
       "en": "Data error",
       "de": "Datenfehler"
     },
     "winnerEyebrow": {
-      "en": "Winner",
-      "de": "Gewinner"
+      "en": "Hooray!",
+      "de": "Hurra!"
     },
     "winnerSubtitle": {
       "en": "finished with",
       "de": "endet mit"
     },
     "closeCelebration": {
-      "en": "Close",
-      "de": "Schließen"
+      "en": "Yay!",
+      "de": "Juhu!"
     },
     "configEyebrow": {
       "en": "Content editor",
@@ -267,6 +267,46 @@
     "editLanguage": {
       "en": "Edit labels in",
       "de": "Beschriftungen bearbeiten in"
+    },
+    "settingsEyebrow": {
+      "en": "Game settings",
+      "de": "Spieleinstellungen"
+    },
+    "settingsTitle": {
+      "en": "Who is playing?",
+      "de": "Wer spielt mit?"
+    },
+    "settingsSubtitle": {
+      "en": "Pick friends, names, and how many spins. Then tap Let's spin!",
+      "de": "Wähle Freunde, Namen und Drehungen. Dann tippe auf Los drehen!"
+    },
+    "startGame": {
+      "en": "Let's spin!",
+      "de": "Los drehen!"
+    },
+    "choosePlayers": {
+      "en": "How many friends?",
+      "de": "Wie viele Freunde?"
+    },
+    "chooseRounds": {
+      "en": "How many spins each?",
+      "de": "Wie viele Drehungen?"
+    },
+    "soloPlayer": {
+      "en": "solo",
+      "de": "allein"
+    },
+    "friends": {
+      "en": "friends",
+      "de": "Freunde"
+    },
+    "yourTurn": {
+      "en": "Your turn",
+      "de": "Du bist dran"
+    },
+    "swipeWheel": {
+      "en": "Swipe the wheel to spin!",
+      "de": "Wische das Rad zum Drehen!"
     }
   },
   "categories": [

@@ -25,7 +25,17 @@ struct WheelView: View {
             ZStack {
                 Circle()
                     .fill(AppTheme.surface)
-                    .shadow(color: AppTheme.ink.opacity(0.14), radius: 18, y: 10)
+                    .shadow(color: AppTheme.accent.opacity(0.22), radius: 16, y: 8)
+
+                Circle()
+                    .stroke(
+                        AngularGradient(
+                            colors: AppTheme.wheelColors + [AppTheme.wheelColors[0]],
+                            center: .center
+                        ),
+                        lineWidth: 10
+                    )
+                    .padding(4)
 
                 if categories.isEmpty {
                     Circle()
@@ -35,23 +45,37 @@ struct WheelView: View {
                                 center: .center
                             )
                         )
+                        .padding(12)
                 } else {
                     WheelSegments(categories: categories)
+                        .padding(12)
                     WheelLabels(
                         categories: categories,
                         languageCode: languageCode,
                         fallbackLanguage: fallbackLanguage,
                         rotation: displayedRotation
                     )
+                    .padding(12)
                 }
 
                 Circle()
-                    .stroke(AppTheme.ink.opacity(0.08), lineWidth: 2)
-                    .padding(2)
-
-                Circle()
-                    .fill(AppTheme.ink)
-                    .frame(width: size * 0.08, height: size * 0.08)
+                    .fill(
+                        RadialGradient(
+                            colors: [AppTheme.gold, AppTheme.accent],
+                            center: .center,
+                            startRadius: 2,
+                            endRadius: size * 0.08
+                        )
+                    )
+                    .frame(width: size * 0.14, height: size * 0.14)
+                    .overlay(
+                        Text("★")
+                            .font(.system(size: size * 0.07, weight: .black, design: .rounded))
+                            .foregroundStyle(.white)
+                    )
+                    .overlay(
+                        Circle().stroke(.white, lineWidth: 3)
+                    )
             }
             .frame(width: size, height: size)
             .rotationEffect(.degrees(displayedRotation))
@@ -172,11 +196,12 @@ private struct WheelLabels: View {
 private struct Pointer: View {
     var body: some View {
         Triangle()
-            .fill(AppTheme.ink)
+            .fill(AppTheme.accent)
             .overlay(
                 Triangle()
-                    .stroke(AppTheme.surface, lineWidth: 1)
+                    .stroke(.white, lineWidth: 2)
             )
+            .shadow(color: AppTheme.accent.opacity(0.35), radius: 3, y: 1)
     }
 }
 

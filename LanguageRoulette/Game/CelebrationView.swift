@@ -11,33 +11,35 @@ struct CelebrationView: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.45)
+            Color.black.opacity(0.4)
                 .ignoresSafeArea()
                 .onTapGesture(perform: onClose)
 
-            ForEach(0..<5, id: \.self) { index in
-                Circle()
-                    .fill(AppTheme.wheelColors[index % AppTheme.wheelColors.count].opacity(0.85))
-                    .frame(width: 12, height: 12)
-                    .offset(y: burst ? -140 - CGFloat(index * 18) : 0)
-                    .offset(x: CGFloat(index - 2) * 36)
+            ForEach(0..<8, id: \.self) { index in
+                Text(["🎉", "⭐", "🎈", "🌈", "🏆"][index % 5])
+                    .font(.title)
+                    .offset(y: burst ? -160 - CGFloat(index * 14) : 20)
+                    .offset(x: CGFloat(index - 4) * 28)
                     .opacity(burst ? 0 : 1)
-                    .animation(.easeOut(duration: 1.2).delay(Double(index) * 0.08), value: burst)
+                    .animation(.easeOut(duration: 1.15).delay(Double(index) * 0.06), value: burst)
             }
 
             VStack(spacing: 14) {
-                Text(eyebrow.uppercased())
-                    .font(.caption.weight(.bold))
-                    .tracking(1.2)
-                    .foregroundStyle(AppTheme.muted)
+                Text("🏆")
+                    .font(.system(size: 64))
+                    .scaleEffect(burst ? 1.08 : 0.9)
+
+                Text(eyebrow)
+                    .font(AppTheme.rounded(.caption, weight: .heavy))
+                    .foregroundStyle(AppTheme.purple)
 
                 Text(winners)
-                    .font(.title.bold())
+                    .font(AppTheme.rounded(.title, weight: .heavy))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(AppTheme.ink)
 
                 Text(subtitle)
-                    .font(.body)
+                    .font(AppTheme.rounded(.body, weight: .semibold))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(AppTheme.muted)
 
@@ -47,8 +49,8 @@ struct CelebrationView: View {
             .padding(28)
             .frame(maxWidth: 360)
             .background(AppTheme.paper)
-            .clipShape(RoundedRectangle(cornerRadius: 18))
-            .shadow(color: AppTheme.ink.opacity(0.18), radius: 24, y: 12)
+            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .shadow(color: AppTheme.accent.opacity(0.22), radius: 24, y: 12)
             .padding(24)
         }
         .onAppear { burst = true }

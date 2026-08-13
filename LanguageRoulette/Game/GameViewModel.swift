@@ -123,6 +123,19 @@ final class GameViewModel: ObservableObject {
         }
     }
 
+    func startGame() {
+        buildPlayers()
+        guard !players.isEmpty, !categories.isEmpty else { return }
+        gameStarted = true
+        messageKey = "pressStart"
+        let name = players[currentPlayerIndex].name
+        setMessage(categoryKey: "nextTurn", promptKey: "pressStart", detail: "\(name),")
+    }
+
+    func returnToSetup() {
+        buildPlayers()
+    }
+
     func buildPlayers() {
         speech.cancel()
         spinGeneration += 1
@@ -163,10 +176,7 @@ final class GameViewModel: ObservableObject {
     }
 
     func spin() {
-        if !gameStarted {
-            buildPlayers()
-        }
-
+        guard gameStarted else { return }
         guard canSpin else { return }
 
         speech.cancel()
