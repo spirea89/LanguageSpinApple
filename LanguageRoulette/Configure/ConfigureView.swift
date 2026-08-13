@@ -51,7 +51,7 @@ struct ConfigureView: View {
             }
             .padding(20)
         }
-        .background(AppTheme.paper.ignoresSafeArea())
+        .background(Color.clear)
         .onAppear {
             viewModel.loadFromStore()
         }
