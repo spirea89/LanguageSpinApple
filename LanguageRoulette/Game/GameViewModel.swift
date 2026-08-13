@@ -6,6 +6,12 @@ struct ActiveQuestion: Equatable {
     let question: Question
 }
 
+enum GameScreen: Equatable {
+    case players
+    case categories
+    case playing
+}
+
 @MainActor
 final class GameViewModel: ObservableObject {
     @Published var playerCount: Int = 2
@@ -14,6 +20,8 @@ final class GameViewModel: ObservableObject {
     @Published var languageCode: String {
         didSet { UserDefaults.standard.set(languageCode, forKey: "roata-language") }
     }
+    @Published var selectedCategoryIDs: Set<String> = []
+    @Published private(set) var screen: GameScreen = .players
 
     @Published private(set) var players: [Player] = []
     @Published private(set) var currentPlayerIndex: Int = 0
@@ -33,14 +41,19 @@ final class GameViewModel: ObservableObject {
     private var askedQuestionKeys = Set<String>()
     private var messageKey = "intro"
     private var spinGeneration = 0
+    private var didInitializeCategories = false
     private let speech = SpeechService()
     private weak var contentStore: ContentStore?
 
     let scoreValues = [0, 10, 30, 45]
     let roundOptions = [5, 10, 20, 30]
 
-    var categories: [Category] {
+    var allCategories: [Category] {
         contentStore?.categories ?? []
+    }
+
+    var wheelCategories: [Category] {
+        allCategories.filter { selectedCategoryIDs.contains($0.id) }
     }
 
     var availableLanguages: [ContentLanguage] {
@@ -48,7 +61,7 @@ final class GameViewModel: ObservableObject {
     }
 
     var setupLocked: Bool {
-        gameStarted && !gameOver
+        screen == .playing && gameStarted && !gameOver
     }
 
     var currentPlayer: Player? {
@@ -56,12 +69,21 @@ final class GameViewModel: ObservableObject {
         return players[currentPlayerIndex]
     }
 
+    var canAdvanceFromPlayers: Bool {
+        playerNames.contains { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    }
+
+    var canStartGame: Bool {
+        !wheelCategories.isEmpty
+    }
+
     var canSpin: Bool {
-        currentQuestion == nil
+        screen == .playing
+            && currentQuestion == nil
             && !spinning
             && !gameOver
             && !players.isEmpty
-            && !categories.isEmpty
+            && !wheelCategories.isEmpty
     }
 
     var canScore: Bool {
@@ -78,7 +100,7 @@ final class GameViewModel: ObservableObject {
         }
         self.contentStore = contentStore
         syncPlayerNameFields()
-        buildPlayers()
+        syncSelectedCategories()
         applyMessageState()
     }
 
@@ -87,6 +109,7 @@ final class GameViewModel: ObservableObject {
         if !contentStore.languages.contains(where: { $0.code == languageCode }) {
             languageCode = contentStore.defaultLanguage
         }
+        syncSelectedCategories()
         if let error = contentStore.loadError {
             categoryLabel = t("dataError")
             questionText = error
@@ -118,15 +141,41 @@ final class GameViewModel: ObservableObject {
 
     func onPlayerCountChanged() {
         syncPlayerNameFields()
-        if !setupLocked {
-            buildPlayers()
+    }
+
+    func goToCategorySetup() {
+        guard canAdvanceFromPlayers else { return }
+        syncPlayerNameFields()
+        syncSelectedCategories()
+        screen = .categories
+    }
+
+    func goBackToPlayers() {
+        screen = .players
+    }
+
+    func toggleCategory(_ id: String) {
+        if selectedCategoryIDs.contains(id) {
+            selectedCategoryIDs.remove(id)
+        } else {
+            selectedCategoryIDs.insert(id)
         }
     }
 
-    func buildPlayers() {
+    func selectAllCategories() {
+        selectedCategoryIDs = Set(allCategories.map(\.id))
+    }
+
+    func selectNoCategories() {
+        selectedCategoryIDs.removeAll()
+    }
+
+    func startGame() {
+        guard canStartGame else { return }
         speech.cancel()
         spinGeneration += 1
         spinning = false
+        syncPlayerNameFields()
         let names = playerNames.enumerated().map { index, name in
             let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
             return trimmed.isEmpty ? "\(t("playerName")) \(index + 1)" : trimmed
@@ -136,11 +185,28 @@ final class GameViewModel: ObservableObject {
         askedQuestionKeys.removeAll()
         currentQuestion = nil
         exampleVisible = false
+        gameStarted = true
+        gameOver = false
+        showCelebration = false
+        screen = .playing
+        promptCurrentPlayerToSpin()
+    }
+
+    func newGame() {
+        speech.cancel()
+        spinGeneration += 1
+        spinning = false
+        currentQuestion = nil
+        exampleVisible = false
         gameStarted = false
         gameOver = false
         showCelebration = false
+        askedQuestionKeys.removeAll()
+        currentPlayerIndex = 0
+        players = []
+        screen = .players
         messageKey = "intro"
-        setMessage(categoryKey: "spinToChoose", promptKey: "intro", detail: "")
+        applyMessageState()
     }
 
     func resetScores() {
@@ -156,29 +222,24 @@ final class GameViewModel: ObservableObject {
         currentQuestion = nil
         exampleVisible = false
         gameOver = false
-        gameStarted = false
         showCelebration = false
-        messageKey = "scoresReset"
-        setMessage(categoryKey: "spinToChoose", promptKey: "scoresReset", detail: "")
+        promptCurrentPlayerToSpin()
     }
 
     func spin() {
-        if !gameStarted {
-            buildPlayers()
-        }
-
         guard canSpin else { return }
+        let spinningCategories = wheelCategories
+        guard !spinningCategories.isEmpty else { return }
 
         speech.cancel()
         spinning = true
-        gameStarted = true
         currentQuestion = nil
         exampleVisible = false
         messageKey = "getReady"
         setMessage(categoryKey: "spinning", promptKey: "getReady", detail: "")
 
-        let categoryIndex = Int.random(in: 0..<categories.count)
-        let step = 360.0 / Double(categories.count)
+        let categoryIndex = Int.random(in: 0..<spinningCategories.count)
+        let step = 360.0 / Double(spinningCategories.count)
         let targetMiddle = Double(categoryIndex) * step + step / 2
         let pointerAngle = 0.0
         let extraTurns = 5 + Int.random(in: 0..<3)
@@ -192,7 +253,7 @@ final class GameViewModel: ObservableObject {
         Task {
             try? await Task.sleep(nanoseconds: 4_900_000_000)
             guard generation == spinGeneration, spinning else { return }
-            let category = categories[categoryIndex]
+            let category = spinningCategories[categoryIndex]
             let question = pickQuestion(from: category)
             currentQuestion = ActiveQuestion(category: category, question: question)
             exampleVisible = false
@@ -224,9 +285,7 @@ final class GameViewModel: ObservableObject {
             repeat {
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.count
             } while players[currentPlayerIndex].spins >= roundLimit
-            messageKey = "pressStart"
-            let name = players[currentPlayerIndex].name
-            setMessage(categoryKey: "nextTurn", promptKey: "pressStart", detail: "\(name),")
+            promptCurrentPlayerToSpin()
         }
     }
 
@@ -255,6 +314,22 @@ final class GameViewModel: ObservableObject {
     }
 
     // MARK: - Private
+
+    private func syncSelectedCategories() {
+        let ids = Set(allCategories.map(\.id))
+        if !didInitializeCategories {
+            selectedCategoryIDs = ids
+            didInitializeCategories = !ids.isEmpty
+            return
+        }
+        selectedCategoryIDs = selectedCategoryIDs.intersection(ids)
+    }
+
+    private func promptCurrentPlayerToSpin() {
+        messageKey = "spinTheWheel"
+        let detail = currentPlayer.map { "\($0.name)," } ?? ""
+        setMessage(categoryKey: "yourTurn", promptKey: "spinTheWheel", detail: detail)
+    }
 
     private func pickQuestion(from category: Category) -> Question {
         let available = category.questions.filter { !askedQuestionKeys.contains($0.key) }
@@ -290,11 +365,8 @@ final class GameViewModel: ObservableObject {
             setMessage(categoryKey: "spinToChoose", promptKey: "intro", detail: "")
         } else if messageKey == "getReady" {
             setMessage(categoryKey: "spinning", promptKey: "getReady", detail: "")
-        } else if messageKey == "scoresReset" {
-            setMessage(categoryKey: "spinToChoose", promptKey: "scoresReset", detail: "")
-        } else if messageKey == "pressStart" {
-            let detail = currentPlayer.map { "\($0.name)," } ?? ""
-            setMessage(categoryKey: "nextTurn", promptKey: "pressStart", detail: detail)
+        } else if messageKey == "spinTheWheel" || messageKey == "pressStart" {
+            promptCurrentPlayerToSpin()
         } else {
             setMessage(categoryKey: "spinToChoose", promptKey: "intro", detail: "")
         }

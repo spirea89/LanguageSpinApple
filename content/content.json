@@ -40,6 +40,74 @@
       "en": "Start",
       "de": "Start"
     },
+    "next": {
+      "en": "Next",
+      "de": "Weiter"
+    },
+    "back": {
+      "en": "Back",
+      "de": "Zurück"
+    },
+    "playerSetupEyebrow": {
+      "en": "Players",
+      "de": "Spieler"
+    },
+    "playerSetupTitle": {
+      "en": "Who's playing?",
+      "de": "Wer spielt mit?"
+    },
+    "playerSetupHint": {
+      "en": "Add names and how many spins each player gets, then tap Next.",
+      "de": "Namen und Drehungen pro Spieler eintragen, dann auf Weiter tippen."
+    },
+    "categorySetupEyebrow": {
+      "en": "Wheel",
+      "de": "Rad"
+    },
+    "categorySetupTitle": {
+      "en": "Choose categories",
+      "de": "Kategorien wählen"
+    },
+    "categorySetupHint": {
+      "en": "Pick the topics you want on the wheel.",
+      "de": "Wähle die Themen, die aufs Rad sollen."
+    },
+    "selectAll": {
+      "en": "Select all",
+      "de": "Alle auswählen"
+    },
+    "selectNone": {
+      "en": "Select none",
+      "de": "Keine"
+    },
+    "onTheWheel": {
+      "en": "on the wheel",
+      "de": "auf dem Rad"
+    },
+    "needCategory": {
+      "en": "Pick at least one category.",
+      "de": "Wähle mindestens eine Kategorie."
+    },
+    "startGame": {
+      "en": "Start game",
+      "de": "Spiel starten"
+    },
+    "yourTurn": {
+      "en": "Your turn",
+      "de": "Du bist dran"
+    },
+    "spinTheWheel": {
+      "en": "spin the wheel!",
+      "de": "dreh das Rad!"
+    },
+    "stepPlayers": {
+      "en": "1 of 2",
+      "de": "1 von 2"
+    },
+    "stepCategories": {
+      "en": "2 of 2",
+      "de": "2 von 2"
+    },
     "spin": {
       "en": "Spin",
       "de": "Drehen"
@@ -117,8 +185,8 @@
       "de": "Drehen zum Auswählen"
     },
     "intro": {
-      "en": "Add players, choose the round count, then press Start.",
-      "de": "Spieler eintragen, Rundenzahl wählen und Start drücken."
+      "en": "Add players, choose categories, then spin.",
+      "de": "Spieler eintragen, Kategorien wählen, dann drehen."
     },
     "noPlayers": {
       "en": "No players yet.",
@@ -153,12 +221,12 @@
       "de": "Nächster Zug"
     },
     "pressStart": {
-      "en": "press Start.",
-      "de": "drücke Start."
+      "en": "spin the wheel!",
+      "de": "dreh das Rad!"
     },
     "scoresReset": {
-      "en": "Scores are reset. Press Start when ready.",
-      "de": "Punkte sind zurückgesetzt. Drücke Start, wenn du bereit bist."
+      "en": "Scores are reset. Spin when ready.",
+      "de": "Punkte sind zurückgesetzt. Dreh, wenn du bereit bist."
     },
     "dataError": {
       "en": "Data error",

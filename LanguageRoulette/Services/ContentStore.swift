@@ -62,8 +62,14 @@ final class ContentStore: ObservableObject {
     // MARK: - Loading
 
     private func loadPack() throws -> ContentPack {
-        let data = try readContentData()
-        return try Self.decode(data: data)
+        let overrideURL = overridesDirectory.appendingPathComponent(overridesFileName)
+        let usingOverride = FileManager.default.fileExists(atPath: overrideURL.path)
+        var pack = try Self.decode(data: try readContentData())
+        if usingOverride, let bundledData = try? readBundledContentData() {
+            let bundled = try Self.decode(data: bundledData)
+            pack.ui = Self.mergingMissingUI(from: bundled.ui, into: pack.ui)
+        }
+        return pack
     }
 
     private func readContentData() throws -> Data {
@@ -71,7 +77,10 @@ final class ContentStore: ObservableObject {
         if FileManager.default.fileExists(atPath: overrideURL.path) {
             return try Data(contentsOf: overrideURL)
         }
+        return try readBundledContentData()
+    }
 
+    private func readBundledContentData() throws -> Data {
         let candidates: [URL?] = [
             Bundle.main.url(forResource: "content", withExtension: "json", subdirectory: "content"),
             Bundle.main.url(forResource: "content", withExtension: "json"),
@@ -86,6 +95,22 @@ final class ContentStore: ObservableObject {
         }
 
         throw ContentStoreError.missingFile(overridesFileName)
+    }
+
+    static func mergingMissingUI(from bundled: [String: [String: String]], into existing: [String: [String: String]]) -> [String: [String: String]] {
+        var merged = existing
+        for (key, translations) in bundled {
+            if merged[key] == nil {
+                merged[key] = translations
+                continue
+            }
+            for (language, value) in translations where value.isEmpty == false {
+                if merged[key]?[language]?.isEmpty != false {
+                    merged[key]?[language] = value
+                }
+            }
+        }
+        return merged
     }
 
     // MARK: - JSON

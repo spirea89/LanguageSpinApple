@@ -4,18 +4,18 @@ struct GameView: View {
     @ObservedObject var viewModel: GameViewModel
     @ObservedObject var contentStore: ContentStore
 
-    private var isPlaying: Bool {
-        viewModel.gameStarted && !viewModel.gameOver
-    }
-
     var body: some View {
         Group {
-            if isPlaying {
+            switch viewModel.screen {
+            case .players:
+                playerSetupLayout
+            case .categories:
+                categorySetupLayout
+            case .playing:
                 playingLayout
-            } else {
-                setupLayout
             }
         }
+        .animation(.easeInOut(duration: 0.22), value: viewModel.screen)
         .background(AppTheme.paper.ignoresSafeArea())
         .overlay {
             if viewModel.showCelebration {
@@ -39,7 +39,153 @@ struct GameView: View {
         }
     }
 
-    // MARK: - Playing (fits on one screen)
+    // MARK: - Player setup
+
+    private var playerSetupLayout: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                setupHeader(
+                    step: 1,
+                    eyebrow: viewModel.t("playerSetupEyebrow"),
+                    title: viewModel.t("playerSetupTitle"),
+                    hint: viewModel.t("playerSetupHint")
+                )
+
+                VStack(alignment: .leading, spacing: 16) {
+                    setupGrid
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(viewModel.t("playerNames"))
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(AppTheme.muted)
+
+                        ForEach(viewModel.playerNames.indices, id: \.self) { index in
+                            TextField("\(viewModel.t("playerName")) \(index + 1)", text: $viewModel.playerNames[index])
+                                .textFieldStyle(.roundedBorder)
+                                .textInputAutocapitalization(.words)
+                        }
+                    }
+
+                    Button(viewModel.t("next")) {
+                        viewModel.goToCategorySetup()
+                    }
+                    .buttonStyle(PrimaryButtonStyle(disabled: !viewModel.canAdvanceFromPlayers))
+                    .disabled(!viewModel.canAdvanceFromPlayers)
+                }
+                .padding(16)
+                .background(AppTheme.surface)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(AppTheme.line, lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+        }
+    }
+
+    // MARK: - Category setup
+
+    private var categorySetupLayout: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    setupHeader(
+                        step: 2,
+                        eyebrow: viewModel.t("categorySetupEyebrow"),
+                        title: viewModel.t("categorySetupTitle"),
+                        hint: viewModel.t("categorySetupHint")
+                    )
+
+                    HStack {
+                        Text("\(viewModel.wheelCategories.count) / \(viewModel.allCategories.count) \(viewModel.t("onTheWheel"))")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(AppTheme.muted)
+                        Spacer()
+                        Button(viewModel.t("selectAll")) {
+                            viewModel.selectAllCategories()
+                        }
+                        .font(.subheadline.weight(.semibold))
+                        Button(viewModel.t("selectNone")) {
+                            viewModel.selectNoCategories()
+                        }
+                        .font(.subheadline.weight(.semibold))
+                    }
+
+                    if viewModel.allCategories.isEmpty {
+                        Text(viewModel.t("noCategories"))
+                            .foregroundStyle(AppTheme.muted)
+                    } else {
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                            ForEach(viewModel.allCategories) { category in
+                                categoryToggle(category)
+                            }
+                        }
+                    }
+
+                    if !viewModel.canStartGame {
+                        Text(viewModel.t("needCategory"))
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(AppTheme.accent)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 16)
+            }
+
+            HStack(spacing: 10) {
+                Button(viewModel.t("back")) {
+                    viewModel.goBackToPlayers()
+                }
+                .buttonStyle(SecondaryButtonStyle())
+
+                Button(viewModel.t("startGame")) {
+                    viewModel.startGame()
+                }
+                .buttonStyle(PrimaryButtonStyle(disabled: !viewModel.canStartGame))
+                .disabled(!viewModel.canStartGame)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(AppTheme.paper.opacity(0.96))
+            .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(AppTheme.line)
+                    .frame(height: 1)
+            }
+        }
+    }
+
+    private func categoryToggle(_ category: Category) -> some View {
+        let selected = viewModel.selectedCategoryIDs.contains(category.id)
+        return Button {
+            viewModel.toggleCategory(category.id)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(selected ? AppTheme.green : AppTheme.muted)
+                Text(viewModel.categoryDisplayName(category))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(AppTheme.ink)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
+            .background(selected ? AppTheme.gold.opacity(0.28) : AppTheme.surface)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(selected ? AppTheme.gold : AppTheme.line, lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Playing
 
     private var playingLayout: some View {
         GeometryReader { geo in
@@ -86,7 +232,7 @@ struct GameView: View {
                     .disabled(!viewModel.canSpin)
 
                     Button(viewModel.t("newGame")) {
-                        viewModel.buildPlayers()
+                        viewModel.newGame()
                     }
                     .buttonStyle(SecondaryButtonStyle())
                 }
@@ -101,92 +247,6 @@ struct GameView: View {
         viewModel.languageCode == "de" ? "Rad wischen zum Drehen" : "Swipe the wheel to spin"
     }
 
-    // MARK: - Setup
-
-    private var setupLayout: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                header
-
-                wheel(size: 260)
-
-                Text(swipeHint)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(AppTheme.muted)
-                    .frame(maxWidth: .infinity)
-
-                playPanelSetup
-
-                scoreboardSection
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 16)
-        }
-    }
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(viewModel.t("gameEyebrow"))
-                .font(.caption.weight(.bold))
-                .tracking(1.1)
-                .foregroundStyle(AppTheme.muted)
-            Text(viewModel.t("gameTitle"))
-                .font(.title.bold())
-                .foregroundStyle(AppTheme.ink)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
-    private func wheel(size: CGFloat) -> some View {
-        WheelView(
-            categories: contentStore.categories,
-            languageCode: viewModel.languageCode,
-            fallbackLanguage: contentStore.defaultLanguage,
-            rotation: viewModel.rotation,
-            isSpinning: viewModel.spinning,
-            canSpin: viewModel.canSpin,
-            onSpin: { viewModel.spin() }
-        )
-        .frame(width: size, height: size)
-        .frame(maxWidth: .infinity)
-    }
-
-    private var playPanelSetup: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            setupGrid
-            playerNames
-
-            Button(viewModel.t("start")) {
-                viewModel.spin()
-            }
-            .buttonStyle(PrimaryButtonStyle(disabled: !viewModel.canSpin))
-            .disabled(!viewModel.canSpin)
-
-            HStack(spacing: 10) {
-                Button(viewModel.t("newGame")) {
-                    viewModel.buildPlayers()
-                }
-                .buttonStyle(SecondaryButtonStyle())
-
-                Button(viewModel.t("resetScores")) {
-                    viewModel.resetScores()
-                }
-                .buttonStyle(GhostButtonStyle())
-            }
-
-            statusStrip
-            questionBoxCompact
-            scoreSection
-        }
-        .padding(14)
-        .background(AppTheme.surface)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(AppTheme.line, lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-    }
-
     private var setupGrid: some View {
         HStack(spacing: 12) {
             labeledControl(title: viewModel.t("playerCount")) {
@@ -196,7 +256,6 @@ struct GameView: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .disabled(viewModel.setupLocked)
                 .onChange(of: viewModel.playerCount) { _, _ in
                     viewModel.onPlayerCountChanged()
                 }
@@ -209,46 +268,8 @@ struct GameView: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .disabled(viewModel.setupLocked)
             }
         }
-    }
-
-    private var playerNames: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(viewModel.t("playerNames"))
-                .font(.subheadline.weight(.bold))
-                .foregroundStyle(AppTheme.muted)
-
-            ForEach(viewModel.playerNames.indices, id: \.self) { index in
-                TextField("\(viewModel.t("playerName")) \(index + 1)", text: $viewModel.playerNames[index])
-                    .textFieldStyle(.roundedBorder)
-                    .disabled(viewModel.setupLocked)
-            }
-        }
-    }
-
-    private var statusStrip: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(viewModel.t("turn"))
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(AppTheme.muted)
-                Text(viewModel.currentPlayer?.name ?? "-")
-                    .font(.headline)
-            }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 4) {
-                Text(viewModel.t("round"))
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(AppTheme.muted)
-                Text(spinStatus)
-                    .font(.headline)
-            }
-        }
-        .padding(10)
-        .background(AppTheme.paper)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
     private var spinStatus: String {
@@ -350,16 +371,53 @@ struct GameView: View {
         }
     }
 
-    private var scoreboardSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(viewModel.t("players"))
-                .font(.title3.bold())
-            ScoreboardView(
-                players: viewModel.players,
-                currentPlayerIndex: viewModel.currentPlayerIndex,
-                emptyText: viewModel.t("noPlayers")
-            )
+    private func wheel(size: CGFloat) -> some View {
+        WheelView(
+            categories: viewModel.wheelCategories,
+            languageCode: viewModel.languageCode,
+            fallbackLanguage: contentStore.defaultLanguage,
+            rotation: viewModel.rotation,
+            isSpinning: viewModel.spinning,
+            canSpin: viewModel.canSpin,
+            onSpin: { viewModel.spin() }
+        )
+        .frame(width: size, height: size)
+        .frame(maxWidth: .infinity)
+    }
+
+    private func setupHeader(step: Int, eyebrow: String, title: String, hint: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                stepDot(number: 1, active: step == 1, done: step > 1)
+                stepDot(number: 2, active: step == 2, done: false)
+                Spacer()
+                Text(viewModel.t(step == 1 ? "stepPlayers" : "stepCategories"))
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(AppTheme.muted)
+            }
+
+            Text(eyebrow)
+                .font(.caption.weight(.bold))
+                .tracking(1.1)
+                .foregroundStyle(AppTheme.muted)
+            Text(title)
+                .font(.title.bold())
+                .foregroundStyle(AppTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(hint)
+                .font(.subheadline)
+                .foregroundStyle(AppTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
         }
+    }
+
+    private func stepDot(number: Int, active: Bool, done: Bool) -> some View {
+        Text("\(number)")
+            .font(.caption.weight(.heavy))
+            .foregroundStyle(active || done ? .white : AppTheme.muted)
+            .frame(width: 26, height: 26)
+            .background(active || done ? AppTheme.ink : AppTheme.line)
+            .clipShape(Circle())
     }
 
     private func labeledControl<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
