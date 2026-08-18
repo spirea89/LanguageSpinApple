@@ -1,18 +1,50 @@
 import AVFoundation
 import Foundation
 
+struct GermanVoiceOption: Identifiable, Hashable {
+    let identifier: String
+    let name: String
+    let language: String
+    let quality: AVSpeechSynthesisVoiceQuality
+
+    var id: String { identifier }
+
+    var qualityKey: String {
+        switch quality {
+        case .premium: return "voiceQualityPremium"
+        case .enhanced: return "voiceQualityEnhanced"
+        default: return "voiceQualityStandard"
+        }
+    }
+
+    var regionKey: String {
+        switch language {
+        case "de-AT": return "voiceRegionAT"
+        case "de-CH": return "voiceRegionCH"
+        default: return "voiceRegionDE"
+        }
+    }
+}
+
 @MainActor
 final class SpeechService {
+    static let automaticVoiceID = ""
+    private static let selectedVoiceKey = "roata-german-voice"
+
+    static var selectedVoiceIdentifier: String {
+        get { UserDefaults.standard.string(forKey: selectedVoiceKey) ?? automaticVoiceID }
+        set { UserDefaults.standard.set(newValue, forKey: selectedVoiceKey) }
+    }
+
     private let synthesizer = AVSpeechSynthesizer()
     private var didConfigureSession = false
-    private var cachedVoice: AVSpeechSynthesisVoice?
 
-    func speakGerman(_ prompt: String) {
+    func speakGerman(_ prompt: String, voiceIdentifier: String? = nil) {
         guard !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         synthesizer.stopSpeaking(at: .immediate)
         configureAudioSessionIfNeeded()
 
-        let voice = preferredGermanVoice()
+        let voice = resolveVoice(identifier: voiceIdentifier ?? Self.selectedVoiceIdentifier)
         let utterance = AVSpeechUtterance(string: prompt)
         utterance.voice = voice
         utterance.rate = naturalRate(for: voice)
@@ -26,6 +58,25 @@ final class SpeechService {
         synthesizer.stopSpeaking(at: .immediate)
     }
 
+    func availableGermanVoices() -> [GermanVoiceOption] {
+        AVSpeechSynthesisVoice.speechVoices()
+            .filter(isListableGermanVoice)
+            .map { voice in
+                GermanVoiceOption(
+                    identifier: voice.identifier,
+                    name: displayName(for: voice),
+                    language: voice.language,
+                    quality: voice.quality
+                )
+            }
+            .sorted { lhs, rhs in
+                let left = voiceSortScore(lhs)
+                let right = voiceSortScore(rhs)
+                if left != right { return left > right }
+                return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+    }
+
     private func configureAudioSessionIfNeeded() {
         guard !didConfigureSession else {
             try? AVAudioSession.sharedInstance().setActive(true, options: [])
@@ -34,66 +85,61 @@ final class SpeechService {
 
         let session = AVAudioSession.sharedInstance()
         do {
-            // `.playback` makes speech audible even when the Ring/Silent switch is on mute.
             try session.setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
             try session.setActive(true, options: [])
             didConfigureSession = true
         } catch {
-            // Still attempt speech; device may play through the current route.
             didConfigureSession = false
         }
     }
 
-    /// Picks the most natural installed Apple German voice.
-    /// Premium/Siri voices (Helena, Anna, Martin) beat the compact `de-DE` voice,
-    /// which is what `AVSpeechSynthesisVoice(language:)` returns and sounds robotic.
-    private func preferredGermanVoice() -> AVSpeechSynthesisVoice? {
-        if let cachedVoice {
-            return cachedVoice
+    private func resolveVoice(identifier: String) -> AVSpeechSynthesisVoice? {
+        let installed = AVSpeechSynthesisVoice.speechVoices().filter(isListableGermanVoice)
+        if !identifier.isEmpty, let chosen = installed.first(where: { $0.identifier == identifier }) {
+            return chosen
         }
-
-        let installed = AVSpeechSynthesisVoice.speechVoices().filter(isUsableGermanVoice)
-        let voice = installed.max(by: { voiceScore($0) < voiceScore($1) })
-        cachedVoice = voice
-        return voice
+        return installed.max(by: { voiceScore($0) < voiceScore($1) })
     }
 
-    private func isUsableGermanVoice(_ voice: AVSpeechSynthesisVoice) -> Bool {
+    private func isListableGermanVoice(_ voice: AVSpeechSynthesisVoice) -> Bool {
         guard voice.language.hasPrefix("de") else { return false }
-        if voice.voiceTraits.contains(.isNoveltyVoice) { return false }
         if voice.voiceTraits.contains(.isPersonalVoice) { return false }
         return true
     }
 
-    private func voiceScore(_ voice: AVSpeechSynthesisVoice) -> Int {
-        var score = 0
+    private func displayName(for voice: AVSpeechSynthesisVoice) -> String {
+        let name = voice.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        return name.isEmpty ? voice.identifier : name
+    }
 
-        switch voice.language {
+    private func voiceSortScore(_ option: GermanVoiceOption) -> Int {
+        var score = 0
+        switch option.language {
         case "de-DE": score += 120
         case "de-AT": score += 40
         case "de-CH": score += 20
         default: score += 10
         }
-
-        switch voice.quality {
+        switch option.quality {
         case .premium: score += 400
         case .enhanced: score += 250
         default: score += 0
         }
-
-        let haystack = "\(voice.identifier) \(voice.name)".lowercased()
+        let haystack = "\(option.identifier) \(option.name)".lowercased()
         if haystack.contains("siri") { score += 80 }
-        if haystack.contains("premium") { score += 50 }
-        if haystack.contains("neural") { score += 40 }
         if haystack.contains("compact") { score -= 90 }
-
-        // Native Apple German voices, nicest first.
-        let favorites = ["helena", "anna", "martin"]
-        if let index = favorites.firstIndex(where: { haystack.contains($0) }) {
-            score += 40 - index * 8
-        }
-
         return score
+    }
+
+    private func voiceScore(_ voice: AVSpeechSynthesisVoice) -> Int {
+        voiceSortScore(
+            GermanVoiceOption(
+                identifier: voice.identifier,
+                name: voice.name,
+                language: voice.language,
+                quality: voice.quality
+            )
+        )
     }
 
     private func naturalRate(for voice: AVSpeechSynthesisVoice?) -> Float {

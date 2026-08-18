@@ -20,6 +20,58 @@
       "en": "Configure",
       "de": "Konfigurieren"
     },
+    "voiceSettingsTitle": {
+      "en": "German voice",
+      "de": "Deutsche Stimme"
+    },
+    "voiceSettingsHint": {
+      "en": "Pick the Apple voice that reads the questions. These are the German voices on this iPhone. Download more in Settings → Accessibility → Spoken Content → Voices → German, then come back here.",
+      "de": "Wähle die Apple-Stimme für die Fragen. Das sind die Deutsch-Stimmen auf diesem iPhone. Weitere gibt es unter Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Deutsch. Danach hierher zurückkommen."
+    },
+    "voiceAutomatic": {
+      "en": "Automatic",
+      "de": "Automatisch"
+    },
+    "voiceAutomaticDetail": {
+      "en": "Uses the nicest German voice on this iPhone",
+      "de": "Nimmt die beste Deutsch-Stimme auf diesem iPhone"
+    },
+    "voicePreview": {
+      "en": "Preview",
+      "de": "Probehören"
+    },
+    "voiceQualityPremium": {
+      "en": "Premium",
+      "de": "Premium"
+    },
+    "voiceQualityEnhanced": {
+      "en": "Enhanced",
+      "de": "Erweitert"
+    },
+    "voiceQualityStandard": {
+      "en": "Standard",
+      "de": "Standard"
+    },
+    "voiceRegionDE": {
+      "en": "Germany",
+      "de": "Deutschland"
+    },
+    "voiceRegionAT": {
+      "en": "Austria",
+      "de": "Österreich"
+    },
+    "voiceRegionCH": {
+      "en": "Switzerland",
+      "de": "Schweiz"
+    },
+    "voiceSample": {
+      "en": "Wie hast du geschlafen?",
+      "de": "Wie hast du geschlafen?"
+    },
+    "voiceNoneFound": {
+      "en": "No German voices found on this device.",
+      "de": "Auf diesem Gerät wurden keine deutschen Stimmen gefunden."
+    },
     "navAdminHint": {
       "en": "Web admin",
       "de": "Web-Admin"

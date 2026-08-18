@@ -4,6 +4,10 @@ struct ConfigureView: View {
     @ObservedObject var viewModel: ConfigureViewModel
     @ObservedObject var contentStore: ContentStore
     @Binding var languageCode: String
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var selectedVoiceID = SpeechService.selectedVoiceIdentifier
+    @State private var germanVoices: [GermanVoiceOption] = []
+    private let speech = SpeechService()
 
     var body: some View {
         ScrollView {
@@ -17,6 +21,8 @@ struct ConfigureView: View {
                         .font(AppTheme.rounded(.largeTitle, weight: .black))
                         .foregroundStyle(.white)
                 }
+
+                voiceSection
 
                 Text(t("staticNote"))
                     .font(AppTheme.rounded(.subheadline, weight: .semibold))
@@ -55,6 +61,106 @@ struct ConfigureView: View {
         .background(Color.clear)
         .onAppear {
             viewModel.loadFromStore()
+            reloadVoices()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                reloadVoices()
+            }
+        }
+    }
+
+    private var voiceSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(t("voiceSettingsTitle"))
+                .font(AppTheme.rounded(.title3, weight: .bold))
+                .foregroundStyle(.white)
+
+            Text(t("voiceSettingsHint"))
+                .font(AppTheme.rounded(.subheadline, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.78))
+
+            voiceRow(
+                id: SpeechService.automaticVoiceID,
+                title: t("voiceAutomatic"),
+                subtitle: t("voiceAutomaticDetail")
+            )
+
+            if germanVoices.isEmpty {
+                Text(t("voiceNoneFound"))
+                    .font(AppTheme.rounded(.subheadline, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.75))
+            } else {
+                ForEach(germanVoices) { voice in
+                    voiceRow(
+                        id: voice.identifier,
+                        title: voice.name,
+                        subtitle: "\(t(voice.qualityKey)) · \(t(voice.regionKey))",
+                        previewIdentifier: voice.identifier
+                    )
+                }
+            }
+        }
+    }
+
+    private func voiceRow(id: String, title: String, subtitle: String, previewIdentifier: String? = nil) -> some View {
+        let selected = selectedVoiceID == id
+        return HStack(spacing: 10) {
+            Button {
+                selectedVoiceID = id
+                SpeechService.selectedVoiceIdentifier = id
+            } label: {
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(title)
+                            .font(AppTheme.rounded(.headline, weight: .bold))
+                            .foregroundStyle(AppTheme.ink)
+                        Text(subtitle)
+                            .font(AppTheme.rounded(.caption, weight: .semibold))
+                            .foregroundStyle(AppTheme.muted)
+                    }
+                    Spacer(minLength: 0)
+                    if selected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(AppTheme.green)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                speech.speakGerman(t("voiceSample"), voiceIdentifier: previewIdentifier ?? id)
+            } label: {
+                Image(systemName: "speaker.wave.2.fill")
+                    .font(.headline)
+                    .foregroundStyle(AppTheme.violet)
+                    .frame(width: 42, height: 42)
+                    .background(Color(red: 0.95, green: 0.93, blue: 0.99))
+                    .clipShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(t("voicePreview"))
+        }
+        .padding(14)
+        .background(selected ? AppTheme.gold.opacity(0.22) : Color.white)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(AppTheme.cardLine, lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .colorScheme(.light)
+    }
+
+    private func reloadVoices() {
+        germanVoices = speech.availableGermanVoices()
+        let current = SpeechService.selectedVoiceIdentifier
+        if current != SpeechService.automaticVoiceID,
+           germanVoices.contains(where: { $0.identifier == current }) == false {
+            SpeechService.selectedVoiceIdentifier = SpeechService.automaticVoiceID
+            selectedVoiceID = SpeechService.automaticVoiceID
+        } else {
+            selectedVoiceID = current
         }
     }
 
