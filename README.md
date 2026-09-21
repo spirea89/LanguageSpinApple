@@ -63,47 +63,28 @@ LanguageRoulette/Resources/content/content.json
 - **categories.labels**: wheel labels (switch with the UI language)
 - **questions**: practice prompts (kept in German for this learning game)
 
-## Web admin (GitHub Pages + auto-commit)
+## Public support and privacy pages
 
-The admin can run on GitHub Pages. Saving there commits the content pack into the repository.
+GitHub Pages publishes only `public-site/`:
 
-1. In GitHub: **Settings → Pages → Source = GitHub Actions**.
-2. After the Pages workflow runs, open:
-   `https://spirea89.github.io/LanguageSpinApple/`
-3. Create a fine-grained personal access token with **Contents: Read and write** for this repo.
-4. Paste the token in the admin **GitHub save settings**, click **Remember settings**.
-5. Edit languages/categories and click **Save to GitHub**.
-6. On your Mac: `git pull`, then rebuild the iOS app in Xcode.
+- https://spirea89.github.io/LanguageSpinApple/support.html
+- https://spirea89.github.io/LanguageSpinApple/privacy.html
 
-The token is stored only in your browser (`localStorage`). Do not commit it.
+The public site contains no editor, tracking scripts, or contact forms. Support email: supportlanguagelearning@gmail.com.
 
-### Local admin (optional)
+## Local web admin
 
-```bash
-python3 admin/dev-server.py
-```
+The content editor stays in `admin/` and is not published by the Pages workflow.
 
-Or with Node.js:
-
-```bash
-node admin/dev-server.cjs
-```
-
-Open [http://localhost:5180](http://localhost:5180).
-
-In the admin you can:
-
-1. Add a language (example: `fr` / French)
-2. Fill UI strings for the new language
-3. Fill category labels for the new language
-4. Edit questions
-5. Click **Save to GitHub** (or local Save when using the Python/Node server)
-
-Then rebuild the iOS app in Xcode.
+Run `python3 admin/dev-server.py` (or `node admin/dev-server.cjs`) and open http://localhost:5180. Save locally to update all three content copies, then commit the changes and rebuild the app.
 
 ## In-app Configure
 
-The iOS Configure tab still lets you edit categories/questions and labels per language on-device. For adding brand-new languages and full translation packs, use the web admin.
+The in-app Configure editor is available only in **Debug** builds (Xcode Run). **Release** builds, including TestFlight and App Store archives, exclude the editor and load only bundled content, ignoring on-device development overrides. The language switcher and game setup remain available to everyone.
+
+Speech uses only Anna, selecting her best installed quality automatically. Older saved voice selections are ignored. If Anna is unavailable, the game explains how to download her in Accessibility voice settings and remains playable without audio.
+
+The separate web admin remains a development tool; saving to GitHub requires a repository write token.
 
 ## Project layout
 

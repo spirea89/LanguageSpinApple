@@ -28,23 +28,15 @@ struct GermanVoiceOption: Identifiable, Hashable {
 
 @MainActor
 final class SpeechService {
-    static let automaticVoiceID = ""
-    private static let selectedVoiceKey = "roata-german-voice"
-
-    static var selectedVoiceIdentifier: String {
-        get { UserDefaults.standard.string(forKey: selectedVoiceKey) ?? automaticVoiceID }
-        set { UserDefaults.standard.set(newValue, forKey: selectedVoiceKey) }
-    }
-
     private let synthesizer = AVSpeechSynthesizer()
     private var didConfigureSession = false
 
-    func speakGerman(_ prompt: String, voiceIdentifier: String? = nil) {
-        guard !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+    @discardableResult
+    func speakGerman(_ prompt: String) -> Bool {
+        guard !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return true }
         synthesizer.stopSpeaking(at: .immediate)
+        guard let voice = resolveVoice() else { return false }
         configureAudioSessionIfNeeded()
-
-        let voice = resolveVoice(identifier: voiceIdentifier ?? Self.selectedVoiceIdentifier)
         let utterance = AVSpeechUtterance(string: prompt)
         utterance.voice = voice
         utterance.rate = naturalRate(for: voice)
@@ -52,6 +44,7 @@ final class SpeechService {
         utterance.volume = 1.0
         utterance.preUtteranceDelay = 0.12
         synthesizer.speak(utterance)
+        return true
     }
 
     func cancel() {
@@ -93,18 +86,16 @@ final class SpeechService {
         }
     }
 
-    private func resolveVoice(identifier: String) -> AVSpeechSynthesisVoice? {
+    private func resolveVoice() -> AVSpeechSynthesisVoice? {
         let installed = AVSpeechSynthesisVoice.speechVoices().filter(isListableGermanVoice)
-        if !identifier.isEmpty, let chosen = installed.first(where: { $0.identifier == identifier }) {
-            return chosen
-        }
         return installed.max(by: { voiceScore($0) < voiceScore($1) })
     }
 
     private func isListableGermanVoice(_ voice: AVSpeechSynthesisVoice) -> Bool {
         guard voice.language.hasPrefix("de") else { return false }
         if voice.voiceTraits.contains(.isPersonalVoice) { return false }
-        return true
+        let words = voice.name.lowercased().split { !$0.isLetter }
+        return words.first == "anna"
     }
 
     private func displayName(for voice: AVSpeechSynthesisVoice) -> String {

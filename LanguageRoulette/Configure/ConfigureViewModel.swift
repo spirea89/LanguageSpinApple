@@ -1,3 +1,4 @@
+#if DEBUG
 import Foundation
 import SwiftUI
 
@@ -173,3 +174,5 @@ final class ConfigureViewModel: ObservableObject {
         }
     }
 }
+
+#endif

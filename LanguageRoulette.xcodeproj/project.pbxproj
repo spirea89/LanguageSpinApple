@@ -6,6 +6,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AABBCC001122334455667701 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AABBCC001122334455667702 /* PrivacyInfo.xcprivacy */; };
 		C42553084C334331ACE3EF81 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF9EA1D242D4981BE86443A /* ContentView.swift */; };
 		DB8A32BA64B54771BC8C2E4B /* LanguageRouletteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB18991E80248A98ED29839 /* LanguageRouletteApp.swift */; };
 		08E32F856CAE4F2DA11F408A /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45677ED8F7714E18B6B9B626 /* AppTheme.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AABBCC001122334455667702 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		90F4FA2406D94F559356DF57 /* Language Roulette.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Language Roulette.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FF9EA1D242D4981BE86443A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4DB18991E80248A98ED29839 /* LanguageRouletteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageRouletteApp.swift; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 				55C5639BE9BB4C5AAD10A422 /* Resources */,
 				F1847C3DF6F0438090ED015F /* Assets.xcassets */,
 				95A57E63EF77401D99344AFE /* Info.plist */,
+				AABBCC001122334455667702 /* PrivacyInfo.xcprivacy */,
 			);
 			path = LanguageRoulette;
 			sourceTree = "<group>";
@@ -215,6 +218,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1155BB59F54744B799BD2A0B /* Assets.xcassets in Resources */,
+				AABBCC001122334455667701 /* PrivacyInfo.xcprivacy in Resources */,
 				7DC91187065C42F8B8BB6280 /* content.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,6 +264,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				ENABLE_TESTABILITY = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 			};
 			name = Debug;
 		};
@@ -284,8 +289,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = XZ7C7ZLF7K;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LanguageRoulette/Info.plist;
@@ -310,8 +315,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = XZ7C7ZLF7K;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LanguageRoulette/Info.plist;

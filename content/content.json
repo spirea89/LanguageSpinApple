@@ -25,8 +25,8 @@
       "de": "Deutsche Stimme"
     },
     "voiceSettingsHint": {
-      "en": "Pick the Apple voice that reads the questions. These are the German voices on this iPhone. Download more in Settings → Accessibility → Spoken Content → Voices → German, then come back here.",
-      "de": "Wähle die Apple-Stimme für die Fragen. Das sind die Deutsch-Stimmen auf diesem iPhone. Weitere gibt es unter Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Deutsch. Danach hierher zurückkommen."
+      "en": "Questions use the best installed quality of Anna automatically.",
+      "de": "Fragen werden automatisch mit der besten installierten Qualität von Anna vorgelesen."
     },
     "voiceAutomatic": {
       "en": "Automatic",
@@ -69,8 +69,8 @@
       "de": "Wie hast du geschlafen?"
     },
     "voiceNoneFound": {
-      "en": "No German voices found on this device.",
-      "de": "Auf diesem Gerät wurden keine deutschen Stimmen gefunden."
+      "en": "Anna is not installed. Download her in Accessibility voice settings.",
+      "de": "Anna ist nicht installiert. Lade sie in den Stimmeinstellungen unter Bedienungshilfen herunter."
     },
     "navAdminHint": {
       "en": "Web admin",
@@ -387,6 +387,26 @@
     "editLanguage": {
       "en": "Edit labels in",
       "de": "Beschriftungen bearbeiten in"
+    },
+    "annaUnavailableTitle": {
+      "en": "Anna voice needed",
+      "de": "Stimme Anna benötigt"
+    },
+    "annaUnavailableMessage": {
+      "en": "To hear questions, download the German voice Anna in iPhone or iPad Settings under Accessibility → Read & Speak (or Spoken Content) → Voices → German. You can keep playing without audio.",
+      "de": "Lade die deutsche Stimme Anna in den iPhone- oder iPad-Einstellungen unter Bedienungshilfen → Lesen & Sprechen (oder Gesprochene Inhalte) → Stimmen → Deutsch herunter. Du kannst ohne Ton weiterspielen."
+    },
+    "helpPrivacy": {
+      "en": "Help & Privacy",
+      "de": "Hilfe & Datenschutz"
+    },
+    "supportLink": {
+      "en": "Support",
+      "de": "Hilfe"
+    },
+    "privacyLink": {
+      "en": "Privacy policy",
+      "de": "Datenschutzerklärung"
     }
   },
   "categories": [

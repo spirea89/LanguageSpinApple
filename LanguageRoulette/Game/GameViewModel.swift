@@ -14,6 +14,7 @@ enum GameScreen: Equatable {
 
 @MainActor
 final class GameViewModel: ObservableObject {
+    @Published var showAnnaUnavailable = false
     @Published var playerCount: Int = 2
     @Published var playerNames: [String] = ["Player 1", "Player 2"]
     @Published var roundLimit: Int = 10
@@ -259,7 +260,7 @@ final class GameViewModel: ObservableObject {
             exampleVisible = false
             spinning = false
             setQuestion(category: categoryDisplayName(category), prompt: question.prompt, answer: question.answer)
-            speech.speakGerman(question.prompt)
+            showAnnaUnavailable = !speech.speakGerman(question.prompt)
         }
     }
 
@@ -291,7 +292,7 @@ final class GameViewModel: ObservableObject {
 
     func replayQuestion() {
         guard let active = currentQuestion, !spinning, !gameOver else { return }
-        speech.speakGerman(active.question.prompt)
+        showAnnaUnavailable = !speech.speakGerman(active.question.prompt)
     }
 
     func showExample() {

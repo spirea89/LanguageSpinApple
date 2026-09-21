@@ -40,6 +40,7 @@ final class ContentStore: ObservableObject {
         }
     }
 
+    #if DEBUG
     func resetToDefaults() throws {
         let overrideURL = overridesDirectory.appendingPathComponent(overridesFileName)
         if FileManager.default.fileExists(atPath: overrideURL.path) {
@@ -55,6 +56,8 @@ final class ContentStore: ObservableObject {
         reload()
     }
 
+    #endif
+
     func localized(_ key: String, language: String) -> String {
         L10n.t(key, language: language, ui: pack.ui, fallback: pack.defaultLanguage)
     }
@@ -62,6 +65,7 @@ final class ContentStore: ObservableObject {
     // MARK: - Loading
 
     private func loadPack() throws -> ContentPack {
+        #if DEBUG
         let overrideURL = overridesDirectory.appendingPathComponent(overridesFileName)
         let usingOverride = FileManager.default.fileExists(atPath: overrideURL.path)
         var pack = try Self.decode(data: try readContentData())
@@ -70,13 +74,18 @@ final class ContentStore: ObservableObject {
             pack.ui = Self.mergingMissingUI(from: bundled.ui, into: pack.ui)
         }
         return pack
+        #else
+        return try Self.decode(data: readBundledContentData())
+        #endif
     }
 
     private func readContentData() throws -> Data {
         let overrideURL = overridesDirectory.appendingPathComponent(overridesFileName)
+        #if DEBUG
         if FileManager.default.fileExists(atPath: overrideURL.path) {
             return try Data(contentsOf: overrideURL)
         }
+        #endif
         return try readBundledContentData()
     }
 

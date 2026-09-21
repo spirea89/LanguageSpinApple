@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 struct ConfigureView: View {
@@ -5,7 +6,6 @@ struct ConfigureView: View {
     @ObservedObject var contentStore: ContentStore
     @Binding var languageCode: String
     @Environment(\.scenePhase) private var scenePhase
-    @State private var selectedVoiceID = SpeechService.selectedVoiceIdentifier
     @State private var germanVoices: [GermanVoiceOption] = []
     private let speech = SpeechService()
 
@@ -80,12 +80,6 @@ struct ConfigureView: View {
                 .font(AppTheme.rounded(.subheadline, weight: .semibold))
                 .foregroundStyle(.white.opacity(0.78))
 
-            voiceRow(
-                id: SpeechService.automaticVoiceID,
-                title: t("voiceAutomatic"),
-                subtitle: t("voiceAutomaticDetail")
-            )
-
             if germanVoices.isEmpty {
                 Text(t("voiceNoneFound"))
                     .font(AppTheme.rounded(.subheadline, weight: .semibold))
@@ -104,64 +98,19 @@ struct ConfigureView: View {
     }
 
     private func voiceRow(id: String, title: String, subtitle: String, previewIdentifier: String? = nil) -> some View {
-        let selected = selectedVoiceID == id
-        return HStack(spacing: 10) {
-            Button {
-                selectedVoiceID = id
-                SpeechService.selectedVoiceIdentifier = id
-            } label: {
-                HStack(spacing: 12) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(title)
-                            .font(AppTheme.rounded(.headline, weight: .bold))
-                            .foregroundStyle(AppTheme.ink)
-                        Text(subtitle)
-                            .font(AppTheme.rounded(.caption, weight: .semibold))
-                            .foregroundStyle(AppTheme.muted)
-                    }
-                    Spacer(minLength: 0)
-                    if selected {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(AppTheme.green)
-                    }
-                }
+        HStack {
+            Text(title)
+            Text(subtitle)
+            Spacer()
+            Button(t("voicePreview")) {
+                speech.speakGerman(t("voiceSample"))
             }
-            .buttonStyle(.plain)
-
-            Button {
-                speech.speakGerman(t("voiceSample"), voiceIdentifier: previewIdentifier ?? id)
-            } label: {
-                Image(systemName: "speaker.wave.2.fill")
-                    .font(.headline)
-                    .foregroundStyle(AppTheme.violet)
-                    .frame(width: 42, height: 42)
-                    .background(Color(red: 0.95, green: 0.93, blue: 0.99))
-                    .clipShape(Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(t("voicePreview"))
         }
-        .padding(14)
-        .background(selected ? AppTheme.gold.opacity(0.22) : Color.white)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(AppTheme.cardLine, lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .colorScheme(.light)
+        .foregroundStyle(.white)
     }
 
     private func reloadVoices() {
         germanVoices = speech.availableGermanVoices()
-        let current = SpeechService.selectedVoiceIdentifier
-        if current != SpeechService.automaticVoiceID,
-           germanVoices.contains(where: { $0.identifier == current }) == false {
-            SpeechService.selectedVoiceIdentifier = SpeechService.automaticVoiceID
-            selectedVoiceID = SpeechService.automaticVoiceID
-        } else {
-            selectedVoiceID = current
-        }
     }
 
     private var categoriesSection: some View {
@@ -324,3 +273,5 @@ struct ConfigureView: View {
         contentStore.localized(key, language: languageCode)
     }
 }
+
+#endif
